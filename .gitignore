@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environments
+venv/
+env/
+ENV/
+source/
+
+# Airflow
+airflow_home/logs/
+airflow_home/*.db-shm
+airflow_home/*.db-wal
+airflow_home/airflow.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (keep structure, ignore processed data)
+data/processed/*
+!data/processed/.gitkeep
+
+# Generated files
+*.generated
+schemas/*.json
+etl/transform_generated.py
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+

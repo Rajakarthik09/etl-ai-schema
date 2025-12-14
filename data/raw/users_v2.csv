@@ -1,0 +1,6 @@
+user_id,first_name,last_name,email,user_age,phone_number,country,created_at
+1,John,Doe,john@example.com,25,+1-555-0101,USA,2023-01-01T00:00:00
+2,Jane,Smith,jane@example.com,30,+1-555-0102,USA,2023-01-02T00:00:00
+3,Bob,Johnson,bob@example.com,35,+1-555-0103,Canada,2023-01-03T00:00:00
+4,Alice,Williams,alice@example.com,28,+1-555-0104,USA,2023-01-04T00:00:00
+5,Charlie,Brown,charlie@example.com,32,+1-555-0105,Mexico,2023-01-05T00:00:00
