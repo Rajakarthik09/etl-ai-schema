@@ -1,0 +1,20 @@
+\section{Basics and Theory}
+\label{sec:basics-theory}
+
+This chapter introduces the core concepts required to understand the thesis, including schema evolution, schema matching and mapping, ETL pipeline operation, and retrieval-augmented generation (RAG) with large language models (LLMs). The detailed literature survey is presented in Chapter~3 (Related Work), while this chapter provides foundational definitions and terminology used throughout the thesis.
+
+\subsection{Schema Evolution}
+
+\textbf{Schema evolution} refers to changes in a dataset's structure over time. In practice, evolution can include adding or removing attributes, renaming fields, changing data types, and restructuring nested records. Such changes are common in data integration environments and directly impact mappings and transformation logic \cite{velegrakis2003mapping,yu2005semantic}.
+
+\subsection{Schema Matching and Mapping}
+
+\textbf{Schema matching} aims to identify correspondences between two schemas, often using name similarity, structural context, and instance-level evidence \cite{rahm2001survey}. \textbf{Schema mappings} then specify how data in a source schema corresponds to data in a target schema, enabling transformation and integration. When schemas evolve, these mappings must be adapted or regenerated.
+
+\subsection{ETL Pipelines and Orchestration}
+
+ETL pipelines operationalize data movement and transformation into analytical systems. In production, these pipelines are typically orchestrated as workflows with dependencies, retries, monitoring, and scheduling. While orchestration improves reliability of execution, it does not remove the underlying challenge of maintaining transformation correctness under schema evolution.
+
+\subsection{Large Language Models and Retrieval-Augmented Generation}
+
+Recent LLMs have demonstrated strong ability to generate and refactor code \cite{chen2021evaluating}. However, pure generation can hallucinate or omit important constraints. Retrieval-augmented generation (RAG) addresses this by retrieving relevant external context (e.g., documentation, examples, historical mappings) and conditioning generation on that evidence \cite{lewis2020retrieval}. This thesis applies RAG to ground mapping regeneration in previously validated artifacts and schema-evolution examples.

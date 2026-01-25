@@ -1,0 +1,20 @@
+% The blank page environment allows you to insert
+% pages into your thesis for specific things
+
+\begin{blankpage}
+    \chapterTitle{A blank page}
+    \addChapterToTOC{A blank page}
+    
+	Here is an optional page environment you could use for things like:
+	\begin{itemize}
+		\item Your own custom preamble chapters (use \texttt{\textbackslash chapterTitle} for titles!). If you want to add these to your table of contents, use the \texttt{\textbackslash addChapterToTOC\{text\} } command and enable manual TOC entries in \texttt{preamble/thesis-details.tex} with \texttt{\textbackslash enableManualTOCEntries}.
+		\item \emph{``This work is dedicated to...''}
+		\item A copyright notice
+		\item A declaration of authorship
+		\item Additional notes
+		\item Quotes
+		\item List of publications
+		\item An actual blank page
+	\end{itemize}
+	You can pass an optional parameter to this environment with the value \texttt{c} to centre this text vertically on the page.
+\end{blankpage}
