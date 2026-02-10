@@ -78,9 +78,14 @@ if __name__ == "__main__":
     results = []
     
     try:
-        results.append(test_detection("users_v1.csv", "users_v2.csv", "v1 → v2 (Basic Changes)"))
-        results.append(test_detection("users_v2.csv", "users_v3.csv", "v2 → v3 (Complex Changes)"))
-        results.append(test_detection("users_v1.csv", "users_v3.csv", "v1 → v3 (Full Evolution)"))
+        results.append(test_detection("users_v1.csv", "users_v2.csv", "Users v1 → v2 (Basic Changes)"))
+        results.append(test_detection("users_v2.csv", "users_v3.csv", "Users v2 → v3 (Complex Changes)"))
+        results.append(test_detection("users_v1.csv", "users_v3.csv", "Users v1 → v3 (Full Evolution)"))
+        # NYC taxi schema evolution (if data present)
+        if os.path.exists(os.path.join(PROJECT_ROOT, "data/raw/yellow_base_v1.csv")):
+            results.append(test_detection("yellow_base_v1.csv", "yellow_base_v2.csv", "Taxi V1 → V2"))
+            results.append(test_detection("yellow_base_v2.csv", "yellow_base_v3.csv", "Taxi V2 → V3"))
+            results.append(test_detection("yellow_base_v1.csv", "yellow_base_v3.csv", "Taxi V1 → V3"))
     except Exception as e:
         print(f"\n❌ Error during testing: {e}")
         import traceback

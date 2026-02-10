@@ -136,6 +136,8 @@ This thesis focuses on building an intelligent ETL system that can:
 
 ## Phase 5: Testing & Validation (Week 10-11)
 
+**NYC taxi experiment:** Data and scripts are in place for controlled schema evolution (V1/V2/V3). See [docs/phase5_evaluation_protocol.md](docs/phase5_evaluation_protocol.md) for the manual-vs-AI timing protocol and results table. See [docs/nyc_taxi_experiment_notes.md](docs/nyc_taxi_experiment_notes.md) for schema change documentation.
+
 ### 5.1 Unit Tests
 **Tasks:**
 - [ ] Test schema detection accuracy

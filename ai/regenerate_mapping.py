@@ -28,18 +28,25 @@ class MappingRegenerator:
             print("Warning: OPENAI_API_KEY not set. AI features will be limited.")
     
     def generate_mapping_prompt(self, old_schema: Dict, new_schema: Dict, 
-                                 changes: Dict) -> str:
+                                 changes: Dict,
+                                 current_transform_snippet: Optional[str] = None) -> str:
         """
         Generate a prompt for the AI to create new ETL mappings.
-        
+
         Args:
             old_schema: Original schema
             new_schema: New schema
             changes: Detected changes
-            
+            current_transform_snippet: Optional custom transform code (def transform(df): ...)
+                                       to preserve; if None, uses default user/full_name example.
         Returns:
             Formatted prompt string
         """
+        default_snippet = """def transform(df):
+    df["full_name"] = df["first_name"] + " " + df["last_name"]
+    return df"""
+        snippet = (current_transform_snippet or default_snippet).strip()
+
         prompt = f"""You are an expert ETL (Extract, Transform, Load) engineer. 
 Your task is to generate Python code for a transform function that handles schema changes.
 
@@ -55,11 +62,9 @@ DETECTED CHANGES:
 - Renamed columns: {[f"{r['old_column']} -> {r['new_column']}" for r in changes.get('renamed_columns', [])]}
 - Type changes: {[f"{tc['column']}: {tc['old_type']} -> {tc['new_type']}" for tc in changes.get('type_changes', [])]}
 
-CURRENT TRANSFORM FUNCTION (for reference):
+CURRENT TRANSFORM FUNCTION (for reference; preserve this business logic under the new schema):
 ```python
-def transform(df):
-    df["full_name"] = df["first_name"] + " " + df["last_name"]
-    return df
+{snippet}
 ```
 
 TASK:
@@ -68,7 +73,7 @@ Generate a new transform function that:
 2. Handles removed columns (either drop them or provide defaults)
 3. Handles added columns (include them in output if they exist)
 4. Handles type changes (convert types appropriately)
-5. Maintains existing business logic (like full_name concatenation)
+5. Maintains existing business logic from the current transform above
 6. Returns a DataFrame with the correct schema
 
 Return ONLY the Python function code, no explanations. The function should:
@@ -78,7 +83,7 @@ Return ONLY the Python function code, no explanations. The function should:
 - Use pandas operations
 
 Generate the transform function:"""
-        
+
         return prompt
     
     def call_ai(self, prompt: str, model: str = "gpt-4") -> str:
@@ -142,20 +147,25 @@ Generate the transform function:"""
     return df"""
     
     def regenerate_transform(self, old_schema: Dict, new_schema: Dict, 
-                            changes: Dict) -> str:
+                            changes: Dict,
+                            current_transform_snippet: Optional[str] = None) -> str:
         """
         Main function to regenerate transform mapping.
-        
+
         Args:
             old_schema: Original schema
             new_schema: New schema
             changes: Detected changes
-            
+            current_transform_snippet: Optional custom transform code to preserve
+
         Returns:
             Generated Python code for transform function
         """
         print("Generating AI prompt...")
-        prompt = self.generate_mapping_prompt(old_schema, new_schema, changes)
+        prompt = self.generate_mapping_prompt(
+            old_schema, new_schema, changes,
+            current_transform_snippet=current_transform_snippet,
+        )
         
         print("Calling AI to generate mapping...")
         code = self.call_ai(prompt)
@@ -199,34 +209,39 @@ Generate the transform function:"""
 
 def regenerate_mapping(old_schema_path: str, new_schema_path: str, 
                        changes_path: str, output_path: str,
-                       api_key: Optional[str] = None) -> str:
+                       api_key: Optional[str] = None,
+                       current_transform_snippet: Optional[str] = None) -> str:
     """
     Main function to regenerate ETL mapping from schema changes.
-    
+
     Args:
         old_schema_path: Path to old schema JSON
         new_schema_path: Path to new schema JSON
         changes_path: Path to changes JSON
         output_path: Path to save generated transform code
         api_key: Optional OpenAI API key
-        
+        current_transform_snippet: Optional custom transform code to preserve (e.g. taxi logic)
+
     Returns:
         Generated transform code
     """
     regenerator = MappingRegenerator(api_key=api_key)
-    
+
     # Load schemas and changes
     with open(old_schema_path, 'r') as f:
         old_schema = json.load(f)
-    
+
     with open(new_schema_path, 'r') as f:
         new_schema = json.load(f)
-    
+
     with open(changes_path, 'r') as f:
         changes = json.load(f)
-    
+
     # Generate new mapping
-    code = regenerator.regenerate_transform(old_schema, new_schema, changes)
+    code = regenerator.regenerate_transform(
+        old_schema, new_schema, changes,
+        current_transform_snippet=current_transform_snippet,
+    )
     
     # Validate
     if regenerator.validate_generated_code(code):

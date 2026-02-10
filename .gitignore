@@ -50,3 +50,6 @@ htmlcov/
 *.temp
 *.log
 
+
+# Raw data
+data/raw/
