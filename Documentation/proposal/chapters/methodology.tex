@@ -1,0 +1,71 @@
+\section{Overall Methodology}
+
+The project follows a design--implement--evaluate methodology:
+%
+\begin{enumerate}
+  \item \textbf{System design and implementation.} A Python-based ETL prototype
+  is implemented with three core components: (i) a schema change detection
+  module, (ii) an AI-powered mapping regenerator built around an
+  OpenAI-compatible LLM, and (iii) an executable ETL pipeline that can be run
+  standalone (CLI scripts) and, in principle, from Apache Airflow DAGs.
+  \item \textbf{Controlled schema evolution scenarios.} Two families of
+  tabular datasets are prepared: a synthetic users dataset and the real-world
+  NYC yellow taxi dataset. For each family, multiple schema versions (V1--V3)
+  are constructed with controlled, documented changes (column additions,
+  removals, renames, and type changes).
+  \item \textbf{Experimental comparison.} For selected schema evolution
+  scenarios, the time and effort required to adapt ETL logic are compared
+  between (a) a purely manual workflow and (b) an AI-assisted workflow that
+  uses the implemented detection and regeneration modules.
+\end{enumerate}
+
+\section{Methods}
+
+\subsection{Schema change detection}
+
+Schema extraction and change detection are implemented in
+\texttt{ai/detect\_schema\_change.py}. The \texttt{SchemaChangeDetector} class
+provides:
+%
+\begin{itemize}
+  \item \texttt{extract\_schema(file\_path)}: reads header and a sample of rows
+  from a CSV, infers dtypes, nullability, and sample values, and returns a
+  JSON-serialisable schema.
+  \item \texttt{compare\_schemas(old\_schema, new\_schema)}: identifies added
+  and removed columns, potential renames (via string similarity), and inferred
+  type changes.
+  \item \texttt{classify\_changes()}: classifies changes as breaking vs.\
+  non-breaking and assigns severity and migration flags.
+\end{itemize}
+
+\subsection{AI-based mapping regeneration}
+
+The \texttt{MappingRegenerator} in \texttt{ai/regenerate\_mapping.py}
+constructs a detailed prompt containing the old and new schemas, a structured
+summary of detected changes, and a code snippet of the current transform
+function. The LLM is asked to produce an updated \texttt{transform(df)} that
+accepts the new schema, preserves business logic, and returns a DataFrame
+suitable for loading. Generated code is validated syntactically and written to
+\texttt{etl/transform\_generated.py}.
+
+\subsection{ETL pipeline execution}
+
+The \texttt{etl/} package wires extraction (CSV/Parquet), transformation
+(baseline or generated), and loading (SQLite) together. Scripts support
+running the taxi pipeline for a chosen schema version and either the baseline
+or the AI-generated transform.
+
+\section{Tools and Technologies}
+
+\begin{itemize}
+  \item \textbf{Language and runtime:} Python~3.
+  \item \textbf{Data processing:} pandas for tabular data; Parquet support for
+  TLC source files.
+  \item \textbf{Storage:} CSV for raw and intermediate data; SQLite for the
+  target database.
+  \item \textbf{AI/LLM:} OpenAI-compatible ChatCompletion API (e.g., OpenAI
+  GPT or a compatible endpoint) for mapping regeneration.
+  \item \textbf{Orchestration (optional):} Apache Airflow for DAG-based
+  execution; evaluation in this thesis relies primarily on direct Python
+  execution for reproducibility.
+\end{itemize}

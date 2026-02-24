@@ -1,0 +1,68 @@
+\section{Research Gap}
+
+The reviewed literature and initial implementation work reveal several gaps
+that motivate the thesis:
+%
+\begin{itemize}
+  \item \textbf{End-to-end workflows.} Classical mapping adaptation frameworks
+  typically start from an explicit description of schema changes and do not
+  address the problem of detecting evolution directly from evolving datasets
+  and operational artefacts \cite{velegrakis2003mapping,yu2005semantic}.
+  \item \textbf{RAG for mapping regeneration.} While RAG has been applied to
+  knowledge-intensive NLP tasks \cite{lewis2020retrieval} and explored for
+  schema matching \cite{sheetrit2024rematch}, there is limited work on using
+  retrieval-augmented LLMs to regenerate executable ETL transformation code
+  grounded in schema and change descriptions.
+  \item \textbf{Operational integration and evaluation.} Many proposals are
+  evaluated on idealized benchmarks and do not consider integration into
+  orchestrated ETL workflows with realistic datasets, monitoring, and
+  rollback mechanisms.
+\end{itemize}
+
+\section{Research Aim and Objectives}
+
+The overall aim of the thesis is:
+%
+\begin{quote}
+  \emph{To design and evaluate an adaptive approach for schema evolution
+  detection and mapping regeneration in ETL pipelines, leveraging
+  retrieval-augmented large language models to produce executable, semantically
+  grounded transformation updates.}
+\end{quote}
+
+To achieve this aim, the thesis pursues the following objectives:
+%
+\begin{enumerate}
+  \item \textbf{Design a schema evolution detection mechanism} that identifies
+  and classifies schema changes relevant to ETL transformations (e.g.,
+  additions, deletions, renames, type changes).
+  \item \textbf{Develop a retrieval strategy} that collects relevant artefacts
+  (historical schemas, mapping specifications, transformation scripts, and
+  example instances) to ground LLM-based regeneration.
+  \item \textbf{Implement an LLM-assisted mapping regeneration component} that
+  generates candidate transformation updates informed by retrieved evidence.
+  \item \textbf{Evaluate the approach} in terms of detection accuracy, mapping
+  correctness, and operational performance, comparing manual and AI-assisted
+  adaptation workflows.
+\end{enumerate}
+
+\section{Research Questions}
+
+The thesis is guided by the following research questions:
+%
+\begin{itemize}
+  \item \textbf{RQ1 (Detection):} Which schema change types can be detected and
+  classified reliably from evolving tabular datasets and associated metadata in
+  realistic ETL scenarios?
+  \item \textbf{RQ2 (Regeneration):} To what extent can RAG-grounded LLMs
+  generate executable transformation updates that preserve the intended
+  semantics of existing ETL mappings?
+  \item \textbf{RQ3 (Operational feasibility):} What are the runtime and
+  maintenance trade-offs of integrating detection and regeneration into an
+  orchestrated ETL workflow, compared to a purely manual adaptation process?
+\end{itemize}
+
+These questions are designed to be empirically answerable using controlled
+schema evolution scenarios for both synthetic and real-world datasets, as
+described in the data and methodology chapters.
+

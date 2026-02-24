@@ -1,0 +1,45 @@
+%% Thesis Proposal Document
+%% Uses the same srhthesis class and preamble as the main thesis
+
+\documentclass{srhthesis}
+
+% Reuse the existing thesis preamble configuration
+\input{../preamble/packages.tex}
+\input{../preamble/thesis-details.tex}
+\input{../preamble/bib-setup.tex}
+
+\begin{document}
+
+% Render title page with the details from thesis-details.tex
+\maketitle
+
+% Table of contents / figures / tables (optional for proposal)
+\thesisTables
+\thesisBodyStart
+
+\chapter{Background and Motivation}
+\input{chapters/background-and-motivation.tex}
+
+\chapter{Work Completed So Far and Literature Review}
+\input{chapters/work-completed-literature-review.tex}
+
+\chapter{Research Gap, Questions, and Thesis Objectives}
+\input{chapters/research-gap-objectives.tex}
+
+\chapter{Data Source}
+\input{chapters/data-source.tex}
+
+\chapter{Methodology: Methods, Tools, and Technologies}
+\input{chapters/methodology.tex}
+
+\chapter{Expected Outcomes}
+\input{chapters/expected-outcome.tex}
+
+\chapter{Evaluation Method}
+\input{chapters/evaluation-method.tex}
+
+% References (reuse the main thesis .bib configuration)
+\printReferences
+
+\end{document}
+

@@ -1,0 +1,59 @@
+\section{Background}
+
+Organizations increasingly depend on data-driven decision making, where
+operational systems such as transactional databases, SaaS applications, APIs,
+and file-based feeds must be continuously integrated into analytics platforms.
+This integration is commonly realized through Extract--Transform--Load (ETL)
+pipelines that ingest, clean, reconcile, and publish data for downstream
+reporting and machine learning.
+
+In practice, the source schemas consumed by ETL pipelines are not stable.
+Schemas evolve as business requirements change, upstream systems are upgraded,
+or new regulatory and analytical needs emerge. Even seemingly small schema
+changes---for example, renaming a column, changing a data type, or adding
+derived attributes---can invalidate existing transformations and break
+downstream dependencies. Recovering from such breakages often requires manual
+diagnosis, reimplementation of transformation logic, and extensive validation,
+leading to downtime and engineering overhead.
+
+The database and data integration literature has long recognized schema
+evolution as a fundamental challenge. Classical work on mapping adaptation
+formalizes how primitive schema changes propagate to schema mappings and
+proposes methods for updating mappings while preserving semantics
+\cite{velegrakis2003mapping,yu2005semantic,rahm2001survey}. In parallel, recent
+advances in large language models (LLMs) and retrieval-augmented generation
+(RAG) have demonstrated strong capabilities in code generation and
+knowledge-intensive reasoning \cite{chen2021evaluating,lewis2020retrieval},
+including early applications to data wrangling and integration tasks
+\cite{narayan2022foundation}.
+
+\section{Motivation}
+
+Despite these advances, practitioners still face substantial manual effort when
+ETL pipelines break due to schema drift. Existing mapping-adaptation frameworks
+typically assume that schema changes are already known and focus on updating
+declarative mappings, rather than detecting changes directly from evolving
+datasets and operational artefacts. Moreover, many proposals are evaluated on
+idealized benchmarks rather than realistic enterprise-like scenarios where
+schemas evolve incrementally over time.
+
+At the same time, LLM-based automation for ETL is emerging, but current
+approaches often treat pipeline generation as a one-off activity. They provide
+limited support for maintaining transformation logic over time as schemas
+change, and they may not explicitly preserve the semantics embedded in existing
+validated mappings. There is therefore a need for approaches that:
+%
+\begin{itemize}
+  \item automatically detect and classify schema evolution events in the data
+  sources consumed by ETL pipelines,
+  \item use retrieval-augmented LLMs to regenerate transformation logic in a
+  way that is grounded in historical schemas, mappings, and code, and
+  \item integrate into practical ETL workflows so that engineers can compare
+  manual and AI-assisted adaptation in realistic scenarios.
+\end{itemize}
+
+The motivation of this thesis is to reduce the manual effort required to keep
+ETL pipelines correct and operational under schema evolution by designing,
+implementing, and empirically evaluating an adaptive workflow that combines
+schema change detection with RAG-based mapping regeneration.
+

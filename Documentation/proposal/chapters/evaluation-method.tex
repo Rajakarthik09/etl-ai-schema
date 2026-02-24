@@ -1,0 +1,75 @@
+\section{Evaluation Design}
+
+The evaluation compares manual and AI-assisted schema adaptation workflows on
+the controlled NYC taxi schema evolution scenarios. The design is aligned with
+the project documentation (e.g., \texttt{THESIS\_ROADMAP.md} and any
+phase~5 evaluation protocol) and supports direct answers to the research
+questions on detection reliability, regeneration correctness, and operational
+feasibility.
+
+\section{Scenarios}
+
+Two primary scenarios are evaluated:
+%
+\begin{description}
+  \item[V1~$\rightarrow$~V2] Moderate evolution: column rename, addition
+  (\texttt{tip\_ratio}), removal (\texttt{payment\_type}), and type change
+  (\texttt{VendorID}).
+  \item[V2~$\rightarrow$~V3] More complex evolution: rename plus multiple
+  added derived/compound columns (\texttt{pickup\_info}, \texttt{time\_of\_day}).
+\end{description}
+
+For each scenario, schema and change JSON files are generated once via the
+detection script and reused across runs so that measurement focuses on
+adaptation and execution rather than schema extraction time.
+
+\section{Conditions}
+
+For each scenario, two conditions are executed:
+%
+\begin{itemize}
+  \item \textbf{Manual condition.} The developer inspects the old and new
+  schemas (and, optionally, the JSON descriptions), then manually edits the
+  taxi transform code to support the new schema while preserving
+  \texttt{trip\_revenue}, \texttt{trip\_duration\_minutes}, and outlier
+  filters. Time is measured from the start of adaptation until the ETL
+  pipeline runs successfully and basic sanity checks pass.
+  \item \textbf{AI-assisted condition.} The developer runs the detection
+  script (if needed), then \texttt{run\_taxi\_regenerate\_mapping.py} for the
+  relevant scenario to generate \texttt{etl/transform\_generated.py}. The
+  pipeline is run in ``generated'' mode. Any fixes required to make the
+  generated code executable are performed and counted as part of the AI-assisted
+  time. Time is measured from the first AI-related command until the pipeline
+  runs successfully and passes checks.
+\end{itemize}
+
+\section{Metrics}
+
+For each scenario and condition, the following are recorded:
+%
+\begin{itemize}
+  \item \textbf{Time to adaptation} (\(T_{\text{manual}}\) and
+  \(T_{\text{AI}}\)): wall-clock time from the start of the adaptation
+  activity to successful pipeline completion and validation.
+  \item \textbf{Success/failure}: whether the adapted pipeline runs to
+  completion without runtime errors.
+  \item \textbf{Correctness}: qualitative assessment of whether expected
+  derived columns are present and plausible (e.g., non-negative revenues and
+  durations, reasonable ranges, non-empty result set).
+  \item \textbf{Manual intervention in the AI condition}: description of any
+  edits applied to the generated code beyond saving and running it.
+\end{itemize}
+
+The time reduction ratio
+\((T_{\text{manual}} - T_{\text{AI}}) / T_{\text{manual}}\) is used to
+quantify the practical benefit of the AI-assisted workflow. Qualitative
+observations on post-editing and failure modes support the discussion of
+limitations and future work.
+
+\section{Validation of Detection}
+
+Schema change detection is validated on the same V1/V2/V3 scenarios by
+comparing the output of \texttt{compare\_schemas} and \texttt{classify\_changes}
+against the documented, ground-truth changes. This provides evidence for RQ1
+(detection reliability) and ensures that the artefacts fed to the LLM are
+accurate.

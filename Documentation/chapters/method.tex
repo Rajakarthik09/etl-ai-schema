@@ -1,25 +1,424 @@
-Here is a sentence, and you can see a nice picture in Figure \ref{fig:brayford}.
+\section{Overall Research Design}
+\label{sec:method-design}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{figures/brayford.jpg}
-    \caption{A picture of the Brayford from Google Images.}
-    \label{fig:brayford}
-\end{figure}
+The aim of this thesis is to design and evaluate an adaptive approach for schema
+evolution detection and mapping regeneration in ETL pipelines, using
+retrieval-augmented large language models (LLMs) as outlined in
+Section~\ref{sec:intro-aim}. The methodological choices in this chapter are
+driven by the research questions introduced in Section~\ref{sec:intro-rq},
+particularly:
+%
+\begin{itemize}
+  \item how reliably schema changes can be detected from evolving tabular data
+  and metadata (RQ1),
+  \item to what extent an LLM, grounded in explicit schema and change
+  descriptions, can regenerate ETL mappings that preserve existing transformation
+  semantics (RQ2), and
+  \item whether the AI-assisted workflow is more efficient than manual
+  adaptation in realistic schema evolution scenarios (RQ3).
+\end{itemize}
 
-Also, a table can be found in Table \ref{tbl:example-table}. You should use a \LaTeX~table generator like \url{https://www.tablesgenerator.com/} if you want to make your life easier.
+The project follows a design–implement–evaluate methodology:
+%
+\begin{enumerate}
+  \item \textbf{System design and implementation.} A Python-based ETL prototype
+  was implemented with three core components: (i) a schema change detection
+  module, (ii) an AI-powered mapping regenerator built around an
+  OpenAI-compatible LLM, and (iii) an executable ETL pipeline that can be run
+  both standalone (CLI scripts) and, in principle, from Apache Airflow DAGs
+  available in the repository.
+  \item \textbf{Controlled schema evolution scenarios.} Two families of
+  tabular datasets were prepared: a synthetic ``users'' dataset and a
+  real-world NYC yellow taxi dataset. For each family, multiple schema
+  versions were constructed with controlled, documented changes (column
+  additions, removals, renames, and type changes).
+  \item \textbf{Experimental comparison.} For selected schema evolution
+  scenarios, the time and effort required to adapt ETL logic are compared
+  between (a) a purely manual workflow and (b) an AI-assisted workflow that
+  uses the implemented detection and regeneration modules. The evaluation
+  protocol and metrics are aligned with Phase~5 in the project roadmap file
+  \texttt{THESIS\_ROADMAP.md} and are detailed in
+  Section~\ref{sec:method-eval}.
+\end{enumerate}
+
+The remainder of this chapter describes the system architecture
+(Section~\ref{sec:method-architecture}), the datasets and schema evolution
+scenarios (Section~\ref{sec:method-data}), the schema change detection method
+(Section~\ref{sec:method-detection}), the AI-based mapping regeneration method
+(Section~\ref{sec:method-ai}), and the experimental protocol used for
+evaluation (Section~\ref{sec:method-eval}).
+
+
+\section{System Architecture}
+\label{sec:method-architecture}
+
+All implementation is contained in the \texttt{etl-ai-schema} repository and
+is written in Python. At a high level, the system consists of four cooperating
+components:
+%
+\begin{enumerate}
+  \item a \textbf{data and storage layer} for CSV-based sources and a SQLite
+  target,
+  \item a \textbf{schema change detection module} in
+  \texttt{ai/detect\_schema\_change.py},
+  \item an \textbf{AI mapping regenerator} in
+  \texttt{ai/regenerate\_mapping.py}, and
+  \item an \textbf{ETL pipeline} in the \texttt{etl/} package, together with
+  utility scripts in \texttt{scripts/}.
+\end{enumerate}
+
+\subsection{Data and storage layer}
+
+Source data for all experiments are stored as CSV files under
+\texttt{data/raw/}. For synthetic experiments, the
+\texttt{scripts/create\_sample\_data.py} script generates three versions of a
+small users dataset (\texttt{users\_v1.csv}, \texttt{users\_v2.csv},
+\texttt{users\_v3.csv}) with pre-defined schema changes. For the real-world
+scenario, NYC TLC yellow taxi Parquet files (for example,
+\texttt{yellow\_tripdata\_2015-01.parquet}) are stored in the same directory.
+
+The target store for ETL outputs is a local SQLite database
+(\texttt{data/database.db}). The loader implementation in
+\texttt{etl/load.py} creates or replaces tables using
+\texttt{pandas.DataFrame.to\_sql}, with configurable table names so that
+multiple versions (e.g.\ \texttt{yellow\_trips\_v1},
+\texttt{yellow\_trips\_v2}) can coexist for inspection.
+
+
+\subsection{ETL pipeline}
+
+The core ETL pipeline is implemented in the \texttt{etl/} package:
+%
+\begin{itemize}
+  \item \texttt{etl/extract.py} provides a simple \texttt{extract} function
+  that reads a CSV file into a \texttt{pandas} DataFrame.
+  \item \texttt{etl/transform.py} contains the original, simple user-facing
+  transform used for the synthetic users dataset (concatenating
+  \texttt{first\_name} and \texttt{last\_name} into \texttt{full\_name}).
+  \item \texttt{etl/transform\_taxi.py} contains the baseline business logic
+  for the taxi experiments (described in
+  Section~\ref{sec:method-taxi-transform}).
+  \item \texttt{etl/pipeline.py} wires extraction, transformation, and loading
+  together. The function \texttt{run\_pipeline} executes the users pipeline,
+  while \texttt{run\_taxi\_pipeline} executes the NYC taxi pipeline for a
+  given schema version and can be configured to use either the baseline taxi
+  transform or an AI-generated transform stored in
+  \texttt{etl/transform\_generated.py}.
+\end{itemize}
+
+Although the repository also includes example Apache Airflow DAGs under
+\texttt{airflow\_home/dags/} for orchestration, the main evaluation described
+in this thesis relies on direct execution of the Python entry points and
+scripts to keep the measurement of manual vs.\ AI effort transparent and
+reproducible.
+
+
+\subsection{Schema change detection module}
+
+Schema extraction and change detection are implemented in
+\texttt{ai/detect\_schema\_change.py}. The central class
+\texttt{SchemaChangeDetector} provides:
+%
+\begin{itemize}
+  \item \texttt{extract\_schema(file\_path)}, which reads the header row and a
+  sample of up to 100 rows of a CSV file using \texttt{pandas}, infers
+  \texttt{dtype} information, nullability, and a small set of illustrative
+  sample values for each column, and returns a JSON-serialisable schema
+  dictionary.
+  \item \texttt{compare\_schemas(old\_schema, new\_schema)}, which identifies
+  added and removed columns, potential renames based on string similarity of
+  column names, and inferred type changes for columns that appear in both
+  versions.
+  \item \texttt{classify\_changes()}, which classifies the detected changes
+  into breaking vs.\ non-breaking and assigns an overall severity level
+  (\texttt{low}, \texttt{medium}, \texttt{high}) as well as a flag indicating
+  whether migration is required.
+  \item persistence helpers \texttt{save\_schema} and \texttt{load\_schema} to
+  store and reload schemas as JSON files under \texttt{schemas/}.
+\end{itemize}
+
+The module exposes a convenience function \texttt{detect\_changes(old\_file,
+new\_file, old\_schema\_path, new\_schema\_path)}, which drives the end-to-end
+workflow: extract schemas for the two files, optionally persist them, compute
+changes and a classification, and return a result dictionary. This function is
+used both in quick tests (\texttt{test\_schema\_detection.py}) and in the
+scripts that prepare JSON artefacts for the AI mapping regenerator.
+
+
+\subsection{AI mapping regenerator}
+
+The AI-based mapping regenerator is implemented in
+\texttt{ai/regenerate\_mapping.py}. The \texttt{MappingRegenerator} class
+encapsulates interaction with an OpenAI-compatible LLM via the ChatCompletion
+API. It is designed to operate on the same JSON schema and change
+representations produced by the detection module.
+
+The method \texttt{generate\_mapping\_prompt(old\_schema, new\_schema,
+changes, current\_transform\_snippet)} constructs a detailed prompt that
+contains:
+%
+\begin{itemize}
+  \item the serialised old and new schemas,
+  \item a structured summary of detected changes (added, removed, renamed,
+  type-changed columns), and
+  \item a code snippet of the current Python transform function that should be
+  semantically preserved under the new schema.
+\end{itemize}
+
+The \texttt{regenerate\_transform} method then sends this prompt to the LLM
+and expects as output a single Python function \texttt{transform(df)} that:
+%
+\begin{enumerate}
+  \item accepts a \texttt{pandas.DataFrame} with the \emph{new} schema as
+  input,
+  \item performs any required column renaming, addition, or type conversion,
+  \item preserves the business logic embodied in the reference transform, and
+  \item returns a DataFrame suitable for downstream loading.
+\end{enumerate}
+
+Generated code is validated syntactically via \texttt{compile} before being
+written to \texttt{etl/transform\_generated.py}. If the OpenAI API is not
+configured, or if an error occurs during the call, the module falls back to a
+simple rule-based template that contains placeholders and the original
+business logic; this ensures that the pipeline can still function, albeit
+without fully automated mapping regeneration.
+
+At the script level, \texttt{scripts/run\_taxi\_regenerate\_mapping.py} loads
+the taxi baseline transform code from \texttt{etl/transform\_taxi.py},
+constructs the appropriate file paths for old schema, new schema, and change
+JSONs, and invokes \texttt{regenerate\_mapping} for a chosen scenario
+(e.g.\ V1~$\rightarrow$~V2 or V2~$\rightarrow$~V3).
+
+
+\section{Datasets and Schema Evolution Scenarios}
+\label{sec:method-data}
+
+Two dataset families are used in this project: a synthetic users dataset for
+rapid iteration and unit testing, and a real-world NYC yellow taxi dataset for
+the main evaluation. Both are represented as multiple schema versions to
+simulate evolution.
+
+
+\subsection{Synthetic users dataset}
+
+The synthetic users dataset is defined and generated by
+\texttt{scripts/create\_sample\_data.py}. It produces three versions:
+\texttt{users\_v1.csv}, \texttt{users\_v2.csv}, and \texttt{users\_v3.csv}.
+Each file contains a small table of user profiles with deliberate schema
+changes:
+%
+\begin{itemize}
+  \item \textbf{V1} contains basic attributes such as \texttt{user\_id},
+  \texttt{first\_name}, \texttt{last\_name}, \texttt{email}, \texttt{age} and
+  \texttt{created\_at}.
+  \item \textbf{V2} introduces additional fields (\texttt{phone\_number},
+  \texttt{country}), renames \texttt{age} to \texttt{user\_age}, and changes
+  the timestamp representation of \texttt{created\_at} (e.g.\ to an ISO~8601
+  format).
+  \item \textbf{V3} removes \texttt{phone\_number}, introduces new attributes
+  such as \texttt{address} and \texttt{subscription\_tier}, renames
+  \texttt{country} to \texttt{country\_code}, and reverts the age column name
+  from \texttt{user\_age} back to \texttt{age}.
+\end{itemize}
+
+These controlled changes cover the main structural evolution events of
+interest (add/remove/rename/type-change) in a minimal setting and are used to
+validate the correctness of the schema detection logic and the basic behaviour
+of the mapping regenerator.
+In this thesis, the users dataset is used only for early testing and unit
+level validation; all substantive evaluation of the proposed approach is based
+on the NYC yellow taxi dataset described next.
+
+
+\subsection{NYC yellow taxi dataset}
+
+For the main evaluation, the project uses real trip records from the NYC Taxi
+and Limousine Commission (TLC). The Parquet files
+\texttt{yellow\_tripdata\_YYYY-MM.parquet} are downloaded from the official
+TLC trip record data portal and stored under \texttt{data/raw/}. A dedicated
+conversion script, \texttt{scripts/convert\_parquet\_to\_csv.py}, loads a
+selected Parquet file (for example, \texttt{yellow\_tripdata\_2015-01.parquet})
+and writes a down-sampled CSV containing approximately 100{,}000 rows to
+\texttt{data/raw/yellow\_base\_v1.csv}. This CSV defines the baseline taxi
+schema (V1).
+
+Controlled schema evolution is then applied in
+\texttt{scripts/create\_taxi\_schema\_versions.py}, which constructs V2 and V3
+from V1:
+%
+\begin{itemize}
+  \item \textbf{V1} includes canonical TLC fields such as
+  \texttt{VendorID}, \texttt{tpep\_pickup\_datetime},
+  \texttt{tpep\_dropoff\_datetime}, \texttt{passenger\_count},
+  \texttt{trip\_distance}, \texttt{RatecodeID}, \texttt{store\_and\_fwd\_flag},
+  \texttt{PULocationID}, \texttt{DOLocationID}, \texttt{payment\_type},
+  \texttt{fare\_amount}, \texttt{tip\_amount}, \texttt{tolls\_amount},
+  \texttt{total\_amount}, and other monetary fields.
+  \item \textbf{V2} applies moderate changes:
+  \begin{itemize}
+    \item renames \texttt{trip\_distance} to \texttt{trip\_km},
+    \item adds a derived column \texttt{tip\_ratio} (tip amount divided by
+    fare amount, with safe handling of zero fares),
+    \item drops \texttt{payment\_type}, and
+    \item casts \texttt{VendorID} from an integer to a string.
+  \end{itemize}
+  \item \textbf{V3} introduces more complex changes:
+  \begin{itemize}
+    \item renames \texttt{trip\_km} to \texttt{trip\_distance\_km},
+    \item adds a compound field \texttt{pickup\_info} that concatenates
+    \texttt{PULocationID} and the pickup timestamp, and
+    \item adds a categorical column \texttt{time\_of\_day} that buckets trips
+    into night, morning, afternoon, or evening based on the pickup hour.
+  \end{itemize}
+\end{itemize}
+
+The resulting files \texttt{yellow\_base\_v1.csv},
+\texttt{yellow\_base\_v2.csv}, and \texttt{yellow\_base\_v3.csv} form a
+controlled yet realistic schema evolution sequence grounded in genuine taxi
+data.
+
+To make the taxi schema evolution scenarios precise and reproducible, the
+detected structural changes are summarised in
+Tables~\ref{tbl:taxi-v1-v2-changes} and~\ref{tbl:taxi-v2-v3-changes}.
 
 \begin{table}[h]
-    \caption{Here is a table. The caption goes above like this.}
-    \centering
-    \begin{tabular}{l|l|c}
-        First name & Last name & Age \\
-        \hline\hline
-        Bob & Bobbington & 24 \\
-        Benth & Wavies & 49 \\
-        Joe & Bloggs & 37 \\
-        Billy & Bob & 10 \\
-
-    \end{tabular}
-    \label{tbl:example-table}
+  \centering
+  \caption{Schema changes for NYC taxi V1 $\rightarrow$ V2.}
+  \label{tbl:taxi-v1-v2-changes}
+  \begin{tabular}{lllp{6cm}}
+    \hline
+    Change type & Old column & New column & Notes \\
+    \hline\hline
+    Rename      & \texttt{trip\_distance} & \texttt{trip\_km} & Distance column renamed to reflect kilometres. \\
+    Add         & --                      & \texttt{tip\_ratio} & Derived feature: \texttt{tip\_amount / fare\_amount}, with safe handling of zero fares. \\
+    Remove      & \texttt{payment\_type}  & --                & Payment code dropped to simulate deprecation of a field. \\
+    Type change & \texttt{VendorID} (int) & \texttt{VendorID} (string) & Identifier stored as string instead of integer. \\
+    \hline
+  \end{tabular}
 \end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Schema changes for NYC taxi V2 $\rightarrow$ V3.}
+  \label{tbl:taxi-v2-v3-changes}
+  \begin{tabular}{lllp{6cm}}
+    \hline
+    Change type & Old column & New column & Notes \\
+    \hline\hline
+    Rename & \texttt{trip\_km} & \texttt{trip\_distance\_km} & Distance column renamed again to include unit and distinguish from V1. \\
+    Add    & --                & \texttt{pickup\_info}       & Compound field concatenating \texttt{PULocationID} and pickup timestamp. \\
+    Add    & --                & \texttt{time\_of\_day}      & Categorical bucket (night/morning/afternoon/evening) derived from pickup hour. \\
+    \hline
+  \end{tabular}
+\end{table}
+
+Schema detection for all V1/V2/V3 combinations is automated via the script
+\texttt{scripts/run\_taxi\_schema\_detection.py}, which calls
+\texttt{detect\_changes} and persists both schema descriptions and change sets
+under \texttt{schemas/} for later use by the AI regenerator and for reporting.
+
+
+\section{Taxi Transform Logic}
+\label{sec:method-taxi-transform}
+
+The baseline taxi transform, implemented in \texttt{etl/transform\_taxi.py},
+defines the business logic that must be preserved when schemas evolve. It
+operates on the V1 schema but is written defensively so that it can also be
+applied to V2 and V3, where column names have changed.
+
+Given a DataFrame with at least the columns \texttt{tpep\_pickup\_datetime},
+\texttt{tpep\_dropoff\_datetime}, \texttt{fare\_amount}, \texttt{tip\_amount},
+and \texttt{tolls\_amount}, the transform:
+%
+\begin{enumerate}
+  \item converts the pickup and dropoff timestamps to \texttt{datetime}
+  objects and computes a new column \texttt{trip\_duration\_minutes} from
+  their difference;
+  \item computes \texttt{trip\_revenue} as the sum of fare, tip, and tolls
+  (with graceful handling if any of these columns are missing); and
+  \item filters outliers, removing trips with non-positive distance or
+  implausible fares (e.g.\ fares $\leq 0$ or above a fixed upper bound).
+\end{enumerate}
+
+Because V2 and V3 rename the distance column, the transform dynamically
+selects whichever of \texttt{trip\_distance}, \texttt{trip\_km}, or
+\texttt{trip\_distance\_km} is present before applying distance-based filters.
+This baseline function is used both as a manual reference implementation and
+as the ``current transform'' snippet passed into the LLM prompt so that
+generated code is encouraged to preserve its semantics under the new schema.
+
+
+\section{Evaluation Protocol}
+\label{sec:method-eval}
+
+The evaluation compares manual and AI-assisted schema adaptation workflows on
+the controlled taxi schema evolution scenarios. The detailed protocol is
+captured in the project documentation file
+\texttt{docs/phase5\_evaluation\_protocol.md}; this section summarises the key
+elements relevant for the thesis.
+
+\subsection{Scenarios}
+
+Two primary scenarios are considered:
+%
+\begin{description}
+  \item[V1~$\rightarrow$~V2] moderate evolution (rename, add, remove, type
+  change).
+  \item[V2~$\rightarrow$~V3] more complex evolution (rename plus multiple
+  added derived/compound columns).
+\end{description}
+
+For each scenario, the corresponding schema JSON files and change JSON files
+are generated once via \texttt{scripts/run\_taxi\_schema\_detection.py} and
+reused across runs to avoid measuring schema extraction time repeatedly.
+
+
+\subsection{Conditions}
+
+For each scenario, two conditions are executed:
+%
+\begin{itemize}
+  \item \textbf{Manual condition.} The developer manually inspects the old and
+  new CSVs (and, optionally, the JSON schema descriptions), then edits the
+  taxi transform code to support the new schema while preserving
+  \texttt{trip\_revenue}, \texttt{trip\_duration\_minutes}, and the outlier
+  filters. The timer starts when the adaptation begins and stops when the ETL
+  pipeline for the new version runs successfully and the output passes basic
+  sanity checks.
+  \item \textbf{AI-assisted condition.} The developer uses the implemented
+  pipeline to call the LLM. Concretely, the detection script is run (if not
+  already done) to ensure schema and change JSONs are present, then
+  \texttt{scripts/run\_taxi\_regenerate\_mapping.py} is invoked for the
+  relevant scenario to generate \texttt{etl/transform\_generated.py}. The
+  ETL pipeline is then run in ``generated'' mode (e.g.\ from
+  \texttt{etl/}: \texttt{python pipeline.py taxi v2 --generated}). Any minor
+  fixes needed to make the generated code executable are performed and counted
+  as part of the AI-assisted time. The timer starts before the first
+  AI-related command and stops once the pipeline runs successfully and passes
+  checks.
+\end{itemize}
+
+
+\subsection{Metrics}
+
+For each scenario and condition, the following metrics are recorded:
+%
+\begin{itemize}
+  \item \textbf{Time to adaptation} (\(T_{\text{manual}}\) and
+  \(T_{\text{AI}}\)): wall-clock time from the start of the adaptation
+  activity to the successful completion of the pipeline run and validation.
+  \item \textbf{Success/failure}: whether the adapted pipeline runs to
+  completion without runtime errors.
+  \item \textbf{Correctness notes}: qualitative assessment of whether the
+  expected derived columns are present and plausible (e.g.\ non-negative
+  revenues and durations, reasonable ranges, non-empty result set).
+  \item \textbf{Manual intervention in AI condition}: a short description of
+  any edits applied to the generated code beyond simply saving and running it.
+\end{itemize}
+
+These measurements directly support the research questions on efficiency and
+reliability. In particular, the time reduction ratio
+\((T_{\text{manual}} - T_{\text{AI}}) / T_{\text{manual}}\) indicates the
+practical benefit of the AI-assisted workflow, while qualitative observations
+about necessary post-editing and failure modes inform the discussion of the
+limits of current LLM-based mapping regeneration.

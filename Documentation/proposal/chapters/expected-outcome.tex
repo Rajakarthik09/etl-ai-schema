@@ -1,0 +1,40 @@
+\section{Expected Outcomes}
+
+The thesis is expected to deliver the following outcomes:
+
+\subsection{Technical contributions}
+
+\begin{itemize}
+  \item A working prototype that integrates schema change detection with
+  LLM-based mapping regeneration in a single ETL-oriented workflow. The
+  prototype will be documented and reproducible using the \texttt{etl-ai-schema}
+  repository.
+  \item Empirical evidence on the reliability of the detection module for the
+  schema change types considered (additions, removals, renames, type changes),
+  including precision and recall where applicable.
+  \item Empirical evidence on the extent to which the RAG-grounded LLM produces
+  executable and semantically correct transformation updates for the NYC taxi
+  V1$\rightarrow$V2 and V2$\rightarrow$V3 scenarios, including qualitative
+  notes on necessary manual fixes.
+\end{itemize}
+
+\subsection{Research contributions}
+
+\begin{itemize}
+  \item A comparative evaluation of manual vs.\ AI-assisted adaptation in
+  terms of time to successful pipeline run and correctness of outputs. The
+  expectation is that the AI-assisted workflow will reduce adaptation time for
+  the evaluated scenarios, while possibly requiring some manual intervention
+  (e.g., minor code fixes or validation).
+  \item A discussion of limitations and failure modes of the current approach
+  (e.g., sensitivity to prompt design, LLM non-determinism, and complex
+  structural changes), providing guidance for future work.
+\end{itemize}
+
+\subsection{Practical impact}
+
+The thesis aims to demonstrate that an integrated detection-and-regeneration
+workflow is feasible and can reduce the manual effort required to keep ETL
+pipelines operational under schema evolution. The results are intended to
+inform practitioners and researchers about the potential and limits of
+retrieval-augmented LLMs for ETL maintenance.

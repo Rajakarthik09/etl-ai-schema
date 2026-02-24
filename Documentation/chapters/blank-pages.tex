@@ -1,20 +1,45 @@
-% The blank page environment allows you to insert
-% pages into your thesis for specific things
+% List of related publications (pre-body page)
 
 \begin{blankpage}
-    \chapterTitle{A blank page}
-    \addChapterToTOC{A blank page}
-    
-	Here is an optional page environment you could use for things like:
-	\begin{itemize}
-		\item Your own custom preamble chapters (use \texttt{\textbackslash chapterTitle} for titles!). If you want to add these to your table of contents, use the \texttt{\textbackslash addChapterToTOC\{text\} } command and enable manual TOC entries in \texttt{preamble/thesis-details.tex} with \texttt{\textbackslash enableManualTOCEntries}.
-		\item \emph{``This work is dedicated to...''}
-		\item A copyright notice
-		\item A declaration of authorship
-		\item Additional notes
-		\item Quotes
-		\item List of publications
-		\item An actual blank page
-	\end{itemize}
-	You can pass an optional parameter to this environment with the value \texttt{c} to centre this text vertically on the page.
+    \chapterTitle{List of Related Publications}
+    \addChapterToTOC{List of Related Publications}
+
+    \noindent This thesis is situated at the intersection of schema evolution, schema mapping, ETL automation, and the application of large language models (LLMs) and retrieval-augmented generation (RAG) in data management. The following publications are particularly relevant and form the core scientific background for this work:
+
+    \vspace{0.5cm}
+
+    \begin{enumerate}
+        \item \textbf{Mapping adaptation under evolving schemas.}  
+        Velegrakis, Y., Miller, R. J., \& Popa, L. (2003). \emph{Mapping Adaptation under Evolving Schemas}. In \emph{Proceedings of the 29th International Conference on Very Large Data Bases (VLDB)}, Berlin, Germany.
+
+        \item \textbf{Semantic adaptation of schema mappings when schemas evolve.}  
+        Yu, C., \& Popa, L. (2005). \emph{Semantic Adaptation of Schema Mappings when Schemas Evolve}. In \emph{Proceedings of the 31st International Conference on Very Large Data Bases (VLDB)}, Trondheim, Norway.
+
+        \item \textbf{Survey of schema matching approaches.}  
+        Rahm, E., \& Bernstein, P. A. (2001). \emph{A Survey of Approaches to Automatic Schema Matching}. \emph{The VLDB Journal}, 10(4), 334--350.
+
+        \item \textbf{Towards scalable schema mapping using LLMs.}  
+        Buss, C., Safari, M., Termehchy, A., Lee, S., \& Maier, D. (2025). \emph{Towards Scalable Schema Mapping using Large Language Models}. \emph{arXiv preprint arXiv:2505.24716}.
+
+        \item \textbf{LLMs and enterprise data integration.}  
+        Kayali, M., Wenz, F., Tatbul, N., \& Demiralp, Ç. (2024). \emph{Mind the Data Gap: Bridging LLMs to Enterprise Data Integration}. \emph{arXiv preprint arXiv:2412.20331} (CIDR~2025).
+
+        \item \textbf{Retrieval-enhanced schema matching with LLMs.}  
+        Sheetrit, E., Brief, M., Mishaeli, M., \& Elisha, O. (2024). \emph{ReMatch: Retrieval Enhanced Schema Matching with LLMs}. \emph{arXiv preprint arXiv:2403.01567}.
+
+        \item \textbf{Retrieval-augmented generation.}  
+        Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., \emph{et al.} (2020). \emph{Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks}. In \emph{Advances in Neural Information Processing Systems (NeurIPS)}, 33, 9459--9474.
+
+        \item \textbf{LLMs trained on code.}  
+        Chen, M., Tworek, J., Jun, H., Yuan, Q., Pinto, H. P. D. O., Kaplan, J., \emph{et al.} (2021). \emph{Evaluating Large Language Models Trained on Code}. \emph{arXiv preprint arXiv:2107.03374}.
+
+        \item \textbf{Foundation models for data wrangling.}  
+        Narayan, A., Chami, I., Orr, L., \& R{\'e}, C. (2022). \emph{Can Foundation Models Wrangle Your Data?} \emph{Proceedings of the VLDB Endowment}, 16(4), 738--746.
+    \end{enumerate}
+
+    \vspace{0.5cm}
+
+    \noindent These works collectively motivate the need for an adaptive, evidence-grounded approach to schema evolution detection and mapping regeneration in ETL pipelines, and they provide baselines and design patterns against which the contributions of this thesis can be evaluated.
+
 \end{blankpage}
+

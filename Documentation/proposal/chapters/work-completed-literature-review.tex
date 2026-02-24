@@ -1,0 +1,86 @@
+\section{Work Completed So Far}
+
+The implementation work carried out to date is hosted in the
+\texttt{etl-ai-schema} repository. The current prototype comprises four main
+components:
+%
+\begin{itemize}
+  \item \textbf{Data and storage layer.} Source data are stored as CSV and
+  Parquet files under \texttt{data/raw/}, and ETL outputs are written to a
+  local SQLite database (\texttt{data/database.db}). Utility scripts support
+  dataset generation, subsampling, and format conversion.
+  \item \textbf{Schema change detection module.} The
+  \texttt{ai/detect\_schema\_change.py} module extracts schemas from tabular
+  data, compares schema versions, and classifies detected changes (additions,
+  deletions, renames, and type changes). It can persist schema and change
+  descriptions as JSON artefacts under \texttt{schemas/}.
+  \item \textbf{AI-based mapping regenerator.} The
+  \texttt{ai/regenerate\_mapping.py} module encapsulates interaction with an
+  OpenAI-compatible LLM to generate updated transformation functions in Python.
+  Given old/new schemas, detected changes, and a reference transformation
+  snippet, it constructs a detailed prompt and produces a candidate
+  \texttt{transform(df)} implementation, which is validated and written to
+  \texttt{etl/transform\_generated.py}.
+  \item \textbf{Executable ETL pipelines.} The \texttt{etl/} package contains
+  extract, transform, and load components for both a synthetic users dataset
+  and a real NYC yellow taxi dataset. The pipelines can be executed via
+  command-line scripts and, in principle, integrated into Apache Airflow DAGs
+  provided in the repository.
+\end{itemize}
+
+Controlled schema evolution scenarios have been prepared for both the synthetic
+users dataset and the NYC taxi dataset. For each, multiple schema versions
+(V1--V3) have been defined with documented structural changes, and scripts are
+available to generate the associated schema and change JSON files. This
+infrastructure enables reproducible experiments comparing manual and
+AI-assisted adaptation workflows.
+
+\section{Literature Review (Summary)}
+
+The thesis builds on four strands of related work.
+
+\subsection{Schema evolution and mapping adaptation}
+
+Classical work by Velegrakis et al.\ and Yu and Popa treats schema mappings as
+first-class artefacts that must be maintained when schemas evolve
+\cite{velegrakis2003mapping,yu2005semantic}. These frameworks formalize how
+primitive schema changes propagate to mappings and propose algorithms for
+generating adapted mappings that preserve semantics. Rahm and Bernstein provide
+a foundational survey of schema matching techniques and their role in data
+integration pipelines \cite{rahm2001survey}. Together, these contributions
+establish the importance of mapping adaptation but generally assume that schema
+changes are already known.
+
+\subsection{LLMs and retrieval for schema-centric tasks}
+
+Recent research has explored how LLMs can support schema-centric tasks such as
+matching and mapping. Buss et al.\ analyze the use of LLMs for scalable schema
+mapping and highlight challenges including inconsistent outputs and limited
+context \cite{buss2025towards}. Kayali et al.\ and Sheetrit et al.\ show how
+retrieval-enhanced methods can improve robustness and scalability in schema
+matching, including the use of RAG-style techniques
+\cite{kayali2024mind,sheetrit2024rematch}. Lewis et al.\ introduce the RAG
+framework, which grounds generation in retrieved evidence
+\cite{lewis2020retrieval}; this idea inspires the use of schemas and change
+descriptions as retrieval artefacts in this thesis.
+
+\subsection{LLMs for ETL and data engineering}
+
+LLMs have demonstrated strong capabilities in code generation
+\cite{chen2021evaluating} and have been investigated for data wrangling and
+integration tasks \cite{narayan2022foundation}. Emerging systems explore
+autonomous or semi-autonomous ETL pipeline design and management, but many
+focus on initial pipeline construction rather than ongoing maintenance under
+schema evolution. This thesis instead targets the adaptation problem: keeping
+existing pipelines functioning as schemas drift.
+
+\subsection{Robustness under schema evolution}
+
+Benchmarks such as EvoSchema highlight that many learned systems, including
+LLM-based ones, are fragile under schema perturbations
+\cite{zhang2024evoschema}. This reinforces the need for approaches that
+explicitly model schema evolution events and use change information to guide
+adaptation, rather than treating schema drift as an incidental source of
+errors. The proposed work contributes to this space by combining explicit
+schema change detection with RAG-grounded regeneration of ETL transformations.
+
