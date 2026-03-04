@@ -78,22 +78,31 @@ This section reports results for canonical ingestion experiments in which determ
 
 The deterministic baseline mapping from any taxi schema version into the canonical schema is implemented in \path{etl/baseline_to_canonical.py}. For V2, the baseline ingests the down-sampled dataset of 93{,}679 rows into the \path{trips_canonical} table. By construction, baseline metrics for this mapping serve as the reference: 100\% cell-level agreement with itself, zero null mismatches, and 100\% per-column agreement across all canonical attributes, including derived columns such as \path{trip_duration_minutes} and \path{trip_revenue}.
 
+In addition to defining the deterministic baseline algorithm, we empirically validate that it preserves the V2 data when ingesting into the canonical table. Concretely, we compare the baseline-normalised V2 CSV against the \path{trips_canonical} table for \texttt{source\_version = 'v2'} and \texttt{ingestion\_method = 'baseline'}. The row counts match exactly (93{,}679 rows in both), and summary statistics (means and sums) for schema-evolution columns such as \texttt{trip\_duration\_minutes}, \texttt{trip\_revenue}, \texttt{passenger\_count}, and \texttt{fare\_amount} are identical up to numerical precision.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/canonical_vs_v2_distributions}
+  \caption{Distributions of key schema-evolution columns in the canonical table (\texttt{trips\_canonical}, V2 baseline) versus the baseline-normalised V2 CSV. For each column, the histograms for the canonical table (top row) and the normalised V2 data (bottom row) are visually indistinguishable, supporting that deterministic canonical ingestion preserves the original V2 data.}
+  \label{fig:canonical-vs-v2-distributions}
+\end{figure}
+
 \subsection{LLM-Generated Canonical Mapping: \texttt{llama3}}
 \label{sec:results-canonical-llama3}
 
 The primary LLM evaluated for canonical ingestion is \path{llama3}, configured via the OpenAI-compatible interface in \path{ai/regenerate_mapping.py}. The evaluation JSON file \path{results/canonical_eval\_llama3.json} aggregates results across runs in which the LLM regenerates a canonical ingestion function for V2 from schema and change artefacts plus a reference transform snippet.
 
-For the successfully evaluated run on V2, the generated canonical ingestion mapping achieves:
+For the V2 scenario, the evaluation JSON file \path{results/canonical_eval\_llama3.json} records that the generated canonical ingestion mapping achieves:
 %
 \begin{itemize}
-  \item a baseline row count of 93{,}679 and an LLM row count of 93{,}679, with \path{row_count_match = true},
+  \item a baseline row count of 93{,}679 and an LLM row count of 100{,}000, so \path{row_count_match = false},
   \item 93{,}679 rows compared cell-wise between baseline and LLM outputs,
-  \item a cell agreement of 100.0\% across all compared cells,
-  \item a null-mismatch count of 0, and
-  \item 100.0\% per-column agreement for all canonical attributes, including \path{trip_duration_minutes} and \path{trip_revenue}.
+  \item a cell agreement of 19.5\% across all compared cells,
+  \item a null-mismatch count of 11{,}805, and
+  \item heterogeneous per-column agreement, with some attributes (such as \path{tolls_amount}) showing high agreement while others (including temporal and derived columns) diverge substantially from the baseline.
 \end{itemize}
 
-These results show that, at least for one model and scenario, a RAG-grounded LLM can reproduce the deterministic canonical mapping exactly on a realistically sized dataset.
+These aggregate metrics align with Table~\ref{tbl:thesis-eval-summary} and illustrate that, without additional safeguards, \texttt{llama3} only partially reproduces the deterministic canonical mapping in the non-ablation runs.
 
 \subsection{LLM-Generated Canonical Mapping: \texttt{mistral}}
 \label{sec:results-canonical-mistral}

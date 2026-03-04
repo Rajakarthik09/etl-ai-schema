@@ -2398,40 +2398,35 @@
     <bcf:citekey order="19" intorder="1">curino2008schema</bcf:citekey>
     <bcf:citekey order="20" intorder="1">rahm2001survey</bcf:citekey>
     <bcf:citekey order="21" intorder="1">li2025llm</bcf:citekey>
-    <bcf:citekey order="22" intorder="1">gungor2025schemora</bcf:citekey>
+    <bcf:citekey order="22" intorder="1">sheetrit2024rematch</bcf:citekey>
     <bcf:citekey order="23" intorder="1">magneto2024</bcf:citekey>
-    <bcf:citekey order="24" intorder="1">li2025llm</bcf:citekey>
-    <bcf:citekey order="25" intorder="1">seedat2024matchmaker</bcf:citekey>
-    <bcf:citekey order="26" intorder="1">ma2025kgrag</bcf:citekey>
-    <bcf:citekey order="27" intorder="1">lewis2020retrieval</bcf:citekey>
-    <bcf:citekey order="28" intorder="1">pneuma2025</bcf:citekey>
-    <bcf:citekey order="29" intorder="1">chen2021evaluating</bcf:citekey>
-    <bcf:citekey order="30" intorder="1">narayan2022foundation</bcf:citekey>
-    <bcf:citekey order="31" intorder="1">diprofio2025flowetl</bcf:citekey>
-    <bcf:citekey order="32" intorder="1">autonomous-etl2025</bcf:citekey>
-    <bcf:citekey order="33" intorder="1">autoschema2024</bcf:citekey>
-    <bcf:citekey order="34" intorder="1">saved2025</bcf:citekey>
-    <bcf:citekey order="35" intorder="1">zhang2024evoschema</bcf:citekey>
-    <bcf:citekey order="36" intorder="1">velegrakis2003mapping</bcf:citekey>
-    <bcf:citekey order="37" intorder="1">yu2005semantic</bcf:citekey>
-    <bcf:citekey order="38" intorder="1">curino2008schema</bcf:citekey>
-    <bcf:citekey order="39" intorder="1">velegrakis2003mapping</bcf:citekey>
-    <bcf:citekey order="39" intorder="2">yu2005semantic</bcf:citekey>
-    <bcf:citekey order="40" intorder="1">buss2025towards</bcf:citekey>
-    <bcf:citekey order="40" intorder="2">kayali2024mind</bcf:citekey>
-    <bcf:citekey order="41" intorder="1">lewis2020retrieval</bcf:citekey>
-    <bcf:citekey order="42" intorder="1">narayan2022foundation</bcf:citekey>
+    <bcf:citekey order="24" intorder="1">ma2025kgrag</bcf:citekey>
+    <bcf:citekey order="25" intorder="1">lewis2020retrieval</bcf:citekey>
+    <bcf:citekey order="26" intorder="1">pneuma2025</bcf:citekey>
+    <bcf:citekey order="27" intorder="1">chen2021evaluating</bcf:citekey>
+    <bcf:citekey order="28" intorder="1">narayan2022foundation</bcf:citekey>
+    <bcf:citekey order="29" intorder="1">diprofio2025flowetl</bcf:citekey>
+    <bcf:citekey order="30" intorder="1">autoschema2024</bcf:citekey>
+    <bcf:citekey order="31" intorder="1">saved2025</bcf:citekey>
+    <bcf:citekey order="32" intorder="1">velegrakis2003mapping</bcf:citekey>
+    <bcf:citekey order="33" intorder="1">yu2005semantic</bcf:citekey>
+    <bcf:citekey order="34" intorder="1">curino2008schema</bcf:citekey>
+    <bcf:citekey order="35" intorder="1">velegrakis2003mapping</bcf:citekey>
+    <bcf:citekey order="35" intorder="2">yu2005semantic</bcf:citekey>
+    <bcf:citekey order="36" intorder="1">buss2025towards</bcf:citekey>
+    <bcf:citekey order="36" intorder="2">kayali2024mind</bcf:citekey>
+    <bcf:citekey order="37" intorder="1">lewis2020retrieval</bcf:citekey>
+    <bcf:citekey order="38" intorder="1">narayan2022foundation</bcf:citekey>
+    <bcf:citekey order="39" intorder="1">chen2021evaluating</bcf:citekey>
+    <bcf:citekey order="40" intorder="1">diprofio2025flowetl</bcf:citekey>
+    <bcf:citekey order="41" intorder="1">narayan2022foundation</bcf:citekey>
+    <bcf:citekey order="42" intorder="1">velegrakis2003mapping</bcf:citekey>
+    <bcf:citekey order="42" intorder="2">yu2005semantic</bcf:citekey>
+    <bcf:citekey order="42" intorder="3">rahm2001survey</bcf:citekey>
     <bcf:citekey order="43" intorder="1">chen2021evaluating</bcf:citekey>
-    <bcf:citekey order="44" intorder="1">diprofio2025flowetl</bcf:citekey>
-    <bcf:citekey order="45" intorder="1">narayan2022foundation</bcf:citekey>
-    <bcf:citekey order="45" intorder="2">autonomous-etl2025</bcf:citekey>
-    <bcf:citekey order="46" intorder="1">velegrakis2003mapping</bcf:citekey>
-    <bcf:citekey order="46" intorder="2">yu2005semantic</bcf:citekey>
-    <bcf:citekey order="46" intorder="3">rahm2001survey</bcf:citekey>
-    <bcf:citekey order="47" intorder="1">chen2021evaluating</bcf:citekey>
-    <bcf:citekey order="47" intorder="2">lewis2020retrieval</bcf:citekey>
-    <bcf:citekey order="47" intorder="3">narayan2022foundation</bcf:citekey>
-    <bcf:citekey order="47" intorder="4">buss2025towards</bcf:citekey>
+    <bcf:citekey order="43" intorder="2">lewis2020retrieval</bcf:citekey>
+    <bcf:citekey order="43" intorder="3">narayan2022foundation</bcf:citekey>
+    <bcf:citekey order="43" intorder="4">buss2025towards</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nyt">

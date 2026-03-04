@@ -551,6 +551,10 @@ INPUT ./figures/schema_detection_canonical_v2.png
 INPUT ./figures/schema_detection_canonical_v2.png
 INPUT ./figures/schema_detection_canonical_v2.png
 INPUT ./figures/schema_detection_canonical_v2.png
+INPUT ./figures/canonical_vs_v2_distributions.png
+INPUT ./figures/canonical_vs_v2_distributions.png
+INPUT ./figures/canonical_vs_v2_distributions.png
+INPUT ./figures/canonical_vs_v2_distributions.png
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmtk10.tfm
 INPUT ./figures/canonical_ingestion_llm_vs_baseline.png
 INPUT ./figures/canonical_ingestion_llm_vs_baseline.png

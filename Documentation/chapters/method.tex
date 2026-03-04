@@ -440,11 +440,9 @@ under \texttt{schemas/} for later use by the AI regenerator and for reporting.
 The baseline taxi transform, implemented in \texttt{etl/transform\_taxi.py},
 defines the business logic that must be preserved when schemas evolve. It
 operates on the V1 schema but is written defensively so that it can also be
-applied to V2, where column names have changed.
-
-Given a DataFrame with at least the columns \texttt{tpep\_pickup\_datetime},
-\texttt{tpep\_dropoff\_datetime}, \texttt{fare\_amount}, \texttt{tip\_amount},
-and \texttt{tolls\_amount}, the transform:
+applied to V2, where column names have changed. Given a DataFrame with at least
+the pickup and dropoff timestamps and the fare, tip, and toll amount columns,
+the transform:
 %
 \begin{enumerate}
   \item converts the pickup and dropoff timestamps to \texttt{datetime}

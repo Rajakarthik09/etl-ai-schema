@@ -325,40 +325,6 @@
       \field{title}{{SAVeD}: Semantic Aware Version Discovery}
       \field{year}{2025}
     \endentry
-    \entry{gungor2025schemora}{article}{}{}
-      \name{author}{3}{}{%
-        {{hash=ac94c2aa954d6c9329ee59763a773728}{%
-           family={Gungor},
-           familyi={G\bibinitperiod},
-           given={Osman\bibnamedelima Erman},
-           giveni={O\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
-        {{hash=ecac2d2155a9fd769219724c33e874c2}{%
-           family={Paulsen},
-           familyi={P\bibinitperiod},
-           given={Derek},
-           giveni={D\bibinitperiod}}}%
-        {{hash=3872082eae52842bf5f9cb35916c5454}{%
-           family={Kang},
-           familyi={K\bibinitperiod},
-           given={William},
-           giveni={W\bibinitperiod}}}%
-      }
-      \strng{namehash}{dd77514a7f1dc681a5c7e9cd5626abb8}
-      \strng{fullhash}{e7edab624cae3fc214b3d7a821242e48}
-      \strng{fullhashraw}{e7edab624cae3fc214b3d7a821242e48}
-      \strng{bibnamehash}{e7edab624cae3fc214b3d7a821242e48}
-      \strng{authorbibnamehash}{e7edab624cae3fc214b3d7a821242e48}
-      \strng{authornamehash}{dd77514a7f1dc681a5c7e9cd5626abb8}
-      \strng{authorfullhash}{e7edab624cae3fc214b3d7a821242e48}
-      \strng{authorfullhashraw}{e7edab624cae3fc214b3d7a821242e48}
-      \field{sortinit}{G}
-      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{arXiv preprint arXiv:2507.14376}
-      \field{title}{{Schemora}: Schema Matching via Multi-Stage Recommendation and Metadata Enrichment Using Off-the-Shelf {LLMs}}
-      \field{year}{2025}
-    \endentry
     \entry{kayali2024mind}{article}{}{}
       \name{author}{4}{}{%
         {{hash=4abf44a5f6d535619c64ead0a058d44e}{%
@@ -737,65 +703,47 @@
       \field{pages}{334\bibrangedash 350}
       \range{pages}{17}
     \endentry
-    \entry{seedat2024matchmaker}{article}{}{}
-      \name{author}{2}{}{%
-        {{hash=78b22616d43a8d1a95bf400a0fa7f4b9}{%
-           family={Seedat},
+    \entry{sheetrit2024rematch}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=cb6dcef6931811157c872f169eba4bb3}{%
+           family={Sheetrit},
            familyi={S\bibinitperiod},
-           given={Nabeel},
-           giveni={N\bibinitperiod}}}%
-        {{hash=44c5ebc1d90d166c1418c35650bdd2ef}{%
-           family={Schaar},
-           familyi={S\bibinitperiod},
-           given={Mihaela},
-           giveni={M\bibinitperiod},
-           prefix={van\bibnamedelima der},
-           prefixi={v\bibinitperiod\bibinitdelim d\bibinitperiod}}}%
+           given={Eitam},
+           giveni={E\bibinitperiod}}}%
+        {{hash=8ffa00ccec5b5471fdbd25d785f036fa}{%
+           family={Brief},
+           familyi={B\bibinitperiod},
+           given={Menachem},
+           giveni={M\bibinitperiod}}}%
+        {{hash=b294a80c8a02cebe7cd96b5926105a85}{%
+           family={Mishaeli},
+           familyi={M\bibinitperiod},
+           given={Moshik},
+           giveni={M\bibinitperiod}}}%
+        {{hash=40647d00b01b6ad21bc3e65573e7fafc}{%
+           family={Elisha},
+           familyi={E\bibinitperiod},
+           given={Oren},
+           giveni={O\bibinitperiod}}}%
       }
-      \strng{namehash}{2ef3b6360899c244ea99be66ec1b1a17}
-      \strng{fullhash}{2ef3b6360899c244ea99be66ec1b1a17}
-      \strng{fullhashraw}{2ef3b6360899c244ea99be66ec1b1a17}
-      \strng{bibnamehash}{2ef3b6360899c244ea99be66ec1b1a17}
-      \strng{authorbibnamehash}{2ef3b6360899c244ea99be66ec1b1a17}
-      \strng{authornamehash}{2ef3b6360899c244ea99be66ec1b1a17}
-      \strng{authorfullhash}{2ef3b6360899c244ea99be66ec1b1a17}
-      \strng{authorfullhashraw}{2ef3b6360899c244ea99be66ec1b1a17}
+      \strng{namehash}{4fdab4713da9fc5f76bf86ceb8cdb152}
+      \strng{fullhash}{5d6d68c9275d1c09c447c65670cc3edc}
+      \strng{fullhashraw}{5d6d68c9275d1c09c447c65670cc3edc}
+      \strng{bibnamehash}{5d6d68c9275d1c09c447c65670cc3edc}
+      \strng{authorbibnamehash}{5d6d68c9275d1c09c447c65670cc3edc}
+      \strng{authornamehash}{4fdab4713da9fc5f76bf86ceb8cdb152}
+      \strng{authorfullhash}{5d6d68c9275d1c09c447c65670cc3edc}
+      \strng{authorfullhashraw}{5d6d68c9275d1c09c447c65670cc3edc}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{journaltitle}{arXiv preprint arXiv:2410.24105}
-      \field{note}{Accepted to {ICML} 2025}
-      \field{title}{{Matchmaker}: Schema Matching with Self-Improving Compositional {LLM} Programs}
+      \field{journaltitle}{arXiv preprint arXiv:2403.01567}
+      \field{title}{{ReMatch}: Retrieval Enhanced Schema Matching with {LLMs}}
       \field{year}{2024}
-    \endentry
-    \entry{autonomous-etl2025}{article}{}{}
-      \name{author}{1}{}{%
-        {{hash=027855a5c34cebc4829cdb22c8f3b5f3}{%
-           family={Tera},
-           familyi={T\bibinitperiod},
-           given={Sougandhika},
-           giveni={S\bibinitperiod}}}%
-      }
-      \strng{namehash}{027855a5c34cebc4829cdb22c8f3b5f3}
-      \strng{fullhash}{027855a5c34cebc4829cdb22c8f3b5f3}
-      \strng{fullhashraw}{027855a5c34cebc4829cdb22c8f3b5f3}
-      \strng{bibnamehash}{027855a5c34cebc4829cdb22c8f3b5f3}
-      \strng{authorbibnamehash}{027855a5c34cebc4829cdb22c8f3b5f3}
-      \strng{authornamehash}{027855a5c34cebc4829cdb22c8f3b5f3}
-      \strng{authorfullhash}{027855a5c34cebc4829cdb22c8f3b5f3}
-      \strng{authorfullhashraw}{027855a5c34cebc4829cdb22c8f3b5f3}
-      \field{sortinit}{T}
-      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{International Journal of Artificial Intelligence, Data Science, and Machine Learning}
-      \field{number}{4}
-      \field{title}{Autonomous {ETL} Pipelines: Using Generative {AI} to Design, Validate, and Deploy Dataflows}
-      \field{volume}{6}
-      \field{year}{2025}
-      \field{pages}{204\bibrangedash 211}
-      \range{pages}{8}
+      \verb{doi}
+      \verb 10.48550/arXiv.2403.01567
+      \endverb
     \endentry
     \entry{velegrakis2003mapping}{inproceedings}{}{}
       \name{author}{3}{}{%
@@ -867,35 +815,6 @@
       \field{year}{2005}
       \field{pages}{1006\bibrangedash 1017}
       \range{pages}{12}
-    \endentry
-    \entry{zhang2024evoschema}{article}{}{}
-      \true{moreauthor}
-      \true{morelabelname}
-      \name{author}{1}{}{%
-        {{hash=db68cbdbeb915cee1c2e0b4b34e1023a}{%
-           family={Zhang},
-           familyi={Z\bibinitperiod},
-           given={Tianshu},
-           giveni={T\bibinitperiod}}}%
-      }
-      \strng{namehash}{af326a4217d8ad1f7b5e0cc7b2aeed3f}
-      \strng{fullhash}{af326a4217d8ad1f7b5e0cc7b2aeed3f}
-      \strng{fullhashraw}{af326a4217d8ad1f7b5e0cc7b2aeed3f}
-      \strng{bibnamehash}{af326a4217d8ad1f7b5e0cc7b2aeed3f}
-      \strng{authorbibnamehash}{af326a4217d8ad1f7b5e0cc7b2aeed3f}
-      \strng{authornamehash}{af326a4217d8ad1f7b5e0cc7b2aeed3f}
-      \strng{authorfullhash}{af326a4217d8ad1f7b5e0cc7b2aeed3f}
-      \strng{authorfullhashraw}{af326a4217d8ad1f7b5e0cc7b2aeed3f}
-      \field{sortinit}{Z}
-      \field{sortinithash}{96892c0b0a36bb8557c40c49813d48b3}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Proceedings of the {VLDB} Endowment}
-      \field{title}{{EvoSchema}: Evaluating Text-to-{SQL} Robustness Against Schema Evolution}
-      \field{volume}{18}
-      \field{year}{2025}
-      \field{pages}{3655\bibrangedash 3668}
-      \range{pages}{14}
     \endentry
   \enddatalist
 \endrefsection

@@ -9,87 +9,86 @@
 \contentsline {section}{\numberline {1.4}Research Questions}{4}{section.1.4}%
 \contentsline {subsection}{\numberline {1.4.1}Main Research Question}{4}{subsection.1.4.1}%
 \contentsline {subsection}{\numberline {1.4.2}Sub-Questions}{4}{subsection.1.4.2}%
-\contentsline {section}{\numberline {1.5}Scope and Delimitations}{5}{section.1.5}%
+\contentsline {section}{\numberline {1.5}Scope and Delimitations}{4}{section.1.5}%
 \contentsline {section}{\numberline {1.6}Outline of Thesis Structure}{5}{section.1.6}%
-\contentsline {chapter}{\numberline {2}Basics and Theory}{7}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Basics and Theory}{7}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}Schema Evolution}{7}{subsection.2.1.1}%
-\contentsline {subsection}{\numberline {2.1.2}Schema Matching and Mapping}{7}{subsection.2.1.2}%
-\contentsline {subsubsection}{Schema mappings as functions}{8}{section*.6}%
-\contentsline {subsubsection}{Information loss and compatibility}{8}{section*.6}%
-\contentsline {subsection}{\numberline {2.1.3}ETL Pipelines and Orchestration}{9}{subsection.2.1.3}%
-\contentsline {subsection}{\numberline {2.1.4}Large Language Models and Retrieval-Augmented Generation}{9}{subsection.2.1.4}%
-\contentsline {subsubsection}{Parametric and non-parametric knowledge}{9}{section*.7}%
-\contentsline {section}{\numberline {2.2}Dataset Used in This Thesis}{10}{section.2.2}%
-\contentsline {chapter}{\numberline {3}Related Work}{12}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Introduction}{12}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Schema Evolution and Mapping Adaptation}{12}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Foundational Mapping Adaptation Frameworks}{12}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Schema Evolution in Practice}{13}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}Commercial Schema Evolution Support}{13}{subsection.3.2.3}%
-\contentsline {section}{\numberline {3.3}Schema Matching and Discovery}{14}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Traditional Schema Matching Approaches}{15}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}LLM-Based Schema Matching}{15}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Knowledge Graph-Enhanced Schema Matching}{16}{subsection.3.3.3}%
-\contentsline {section}{\numberline {3.4}Retrieval-Augmented Generation for Data Integration}{16}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}Foundational RAG Framework}{17}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}RAG for Tabular Data Discovery}{17}{subsection.3.4.2}%
-\contentsline {section}{\numberline {3.5}Large Language Models for ETL and Data Engineering}{17}{section.3.5}%
-\contentsline {subsection}{\numberline {3.5.1}Code Generation with LLMs}{17}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.5.2}Autonomous ETL Pipeline Design}{18}{subsection.3.5.2}%
-\contentsline {section}{\numberline {3.6}Adaptive Schema Evolution Detection}{19}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}Machine Learning-Based Detection}{19}{subsection.3.6.1}%
-\contentsline {subsection}{\numberline {3.6.2}Text-to-SQL Robustness Against Schema Evolution}{19}{subsection.3.6.2}%
-\contentsline {section}{\numberline {3.7}Gaps and Research Opportunities}{20}{section.3.7}%
-\contentsline {section}{\numberline {3.8}Summary}{21}{section.3.8}%
-\contentsline {chapter}{\numberline {4}Method}{22}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Overall Research Design}{22}{section.4.1}%
-\contentsline {section}{\numberline {4.2}System Architecture}{23}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Data and storage layer}{23}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}ETL pipeline}{24}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {4.2.3}Schema change detection module}{25}{subsection.4.2.3}%
-\contentsline {subsection}{\numberline {4.2.4}AI mapping regenerator}{27}{subsection.4.2.4}%
-\contentsline {subsubsection}{Retrieval-augmented generation (RAG) workflow}{28}{Item.24}%
-\contentsline {paragraph}{Metadata extraction (retriever).}{28}{Item.24}%
-\contentsline {paragraph}{Context assembly (augmentation).}{28}{Item.24}%
-\contentsline {paragraph}{Prompt grounding (generation).}{29}{Item.24}%
-\contentsline {paragraph}{Prompt template.}{29}{Item.24}%
-\contentsline {section}{\numberline {4.3}Dataset and Schema Evolution Scenario}{31}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}NYC yellow taxi dataset}{31}{subsection.4.3.1}%
-\contentsline {section}{\numberline {4.4}Taxi Transform Logic}{32}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Evaluation Protocol}{33}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}Scenarios}{33}{subsection.4.5.1}%
-\contentsline {subsection}{\numberline {4.5.2}Conditions}{34}{subsection.4.5.2}%
-\contentsline {subsection}{\numberline {4.5.3}Metrics}{34}{subsection.4.5.3}%
-\contentsline {subsection}{\numberline {4.5.4}Ablation Study: Zero-Shot vs.\ RAG-Grounded Generation}{35}{subsection.4.5.4}%
-\contentsline {chapter}{\numberline {5}Results}{37}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Schema Change Detection Results (RQ1)}{37}{section.5.1}%
-\contentsline {subsection}{\numberline {5.1.1}NYC Taxi V1~$\rightarrow $~V2}{37}{subsection.5.1.1}%
-\contentsline {subsection}{\numberline {5.1.2}Canonical~$\leftrightarrow $~V2}{38}{subsection.5.1.2}%
-\contentsline {subsection}{\numberline {5.1.3}Heuristic vs.\ RAG-LLM Detection for Canonical~$\leftrightarrow $~V2}{38}{subsection.5.1.3}%
-\contentsline {section}{\numberline {5.2}Canonical Ingestion Results (RQ2)}{40}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Deterministic Baseline}{40}{subsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.2.2}LLM-Generated Canonical Mapping: \texttt {llama3}}{40}{subsection.5.2.2}%
-\contentsline {subsection}{\numberline {5.2.3}LLM-Generated Canonical Mapping: \texttt {mistral}}{41}{subsection.5.2.3}%
+\contentsline {chapter}{\numberline {2}Basics and Theory}{6}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Basics and Theory}{6}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Schema Evolution}{6}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Schema Matching and Mapping}{6}{subsection.2.1.2}%
+\contentsline {subsubsection}{Schema mappings as functions}{7}{section*.6}%
+\contentsline {subsubsection}{Information loss and compatibility}{7}{section*.6}%
+\contentsline {subsection}{\numberline {2.1.3}ETL Pipelines and Orchestration}{8}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}Large Language Models and Retrieval-Augmented Generation}{8}{subsection.2.1.4}%
+\contentsline {subsubsection}{Parametric and non-parametric knowledge}{8}{section*.7}%
+\contentsline {section}{\numberline {2.2}Dataset Used in This Thesis}{9}{section.2.2}%
+\contentsline {chapter}{\numberline {3}Related Work}{11}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Introduction}{11}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Schema Evolution and Mapping Adaptation}{11}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Foundational Mapping Adaptation Frameworks}{11}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Schema Evolution in Practice}{12}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Commercial Schema Evolution Support}{12}{subsection.3.2.3}%
+\contentsline {section}{\numberline {3.3}Schema Matching and Discovery}{13}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Traditional Schema Matching Approaches}{14}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}LLM-Based Schema Matching}{14}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Knowledge Graph-Enhanced Schema Matching}{14}{subsection.3.3.3}%
+\contentsline {section}{\numberline {3.4}Retrieval-Augmented Generation for Data Integration}{15}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Foundational RAG Framework}{15}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}RAG for Tabular Data Discovery}{15}{subsection.3.4.2}%
+\contentsline {section}{\numberline {3.5}Large Language Models for ETL and Data Engineering}{16}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Code Generation with LLMs}{16}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Autonomous ETL Pipeline Design}{16}{subsection.3.5.2}%
+\contentsline {section}{\numberline {3.6}Adaptive Schema Evolution Detection}{17}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Machine Learning-Based Detection}{17}{subsection.3.6.1}%
+\contentsline {section}{\numberline {3.7}Gaps and Research Opportunities}{17}{section.3.7}%
+\contentsline {section}{\numberline {3.8}Summary}{18}{section.3.8}%
+\contentsline {chapter}{\numberline {4}Method}{20}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Overall Research Design}{20}{section.4.1}%
+\contentsline {section}{\numberline {4.2}System Architecture}{21}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Data and storage layer}{22}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}ETL pipeline}{22}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Schema change detection module}{23}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}AI mapping regenerator}{24}{subsection.4.2.4}%
+\contentsline {subsubsection}{Retrieval-augmented generation (RAG) workflow}{25}{Item.24}%
+\contentsline {paragraph}{Metadata extraction (retriever).}{26}{Item.24}%
+\contentsline {paragraph}{Context assembly (augmentation).}{26}{Item.24}%
+\contentsline {paragraph}{Prompt grounding (generation).}{26}{Item.24}%
+\contentsline {paragraph}{Prompt template.}{27}{Item.24}%
+\contentsline {section}{\numberline {4.3}Dataset and Schema Evolution Scenario}{29}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}NYC yellow taxi dataset}{29}{subsection.4.3.1}%
+\contentsline {section}{\numberline {4.4}Taxi Transform Logic}{30}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Evaluation Protocol}{31}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Scenarios}{31}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Conditions}{31}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.5.3}Metrics}{32}{subsection.4.5.3}%
+\contentsline {subsection}{\numberline {4.5.4}Ablation Study: Zero-Shot vs.\ RAG-Grounded Generation}{33}{subsection.4.5.4}%
+\contentsline {chapter}{\numberline {5}Results}{35}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Schema Change Detection Results (RQ1)}{35}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}NYC Taxi V1~$\rightarrow $~V2}{35}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Canonical~$\leftrightarrow $~V2}{36}{subsection.5.1.2}%
+\contentsline {subsection}{\numberline {5.1.3}Heuristic vs.\ RAG-LLM Detection for Canonical~$\leftrightarrow $~V2}{36}{subsection.5.1.3}%
+\contentsline {section}{\numberline {5.2}Canonical Ingestion Results (RQ2)}{38}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Deterministic Baseline}{38}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}LLM-Generated Canonical Mapping: \texttt {llama3}}{38}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}LLM-Generated Canonical Mapping: \texttt {mistral}}{40}{subsection.5.2.3}%
 \contentsline {section}{\numberline {5.3}Ablation Results: Zero-Shot vs.\ RAG-Grounded Mapping}{41}{section.5.3}%
-\contentsline {section}{\numberline {5.4}End-to-End AI-Assisted Workflow Results (RQ3)}{44}{section.5.4}%
-\contentsline {subsection}{\numberline {5.4.1}Scenario: NYC Taxi V1~$\rightarrow $~V2}{44}{subsection.5.4.1}%
-\contentsline {section}{\numberline {5.5}Summary of Key Quantitative Metrics}{45}{section.5.5}%
-\contentsline {chapter}{\numberline {6}Discussion}{47}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Overview}{47}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Discussion of RQ1: Schema Change Detection}{47}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Discussion of RQ2: Canonical Ingestion and Mapping Regeneration}{48}{section.6.3}%
-\contentsline {subsection}{\numberline {6.3.1}Effect of Retrieval vs.\ Zero-Shot Prompting}{49}{subsection.6.3.1}%
-\contentsline {section}{\numberline {6.4}Discussion of RQ3: Operational Feasibility and Effort Reduction}{50}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Human-in-the-Loop and Automation Bias}{51}{section.6.5}%
-\contentsline {section}{\numberline {6.6}Limitations and Threats to Validity}{52}{section.6.6}%
-\contentsline {subsection}{\numberline {6.6.1}Dataset and Scenario Scope}{52}{subsection.6.6.1}%
-\contentsline {subsection}{\numberline {6.6.2}Model and Prompt Dependence}{53}{subsection.6.6.2}%
-\contentsline {subsection}{\numberline {6.6.3}Operational and Organisational Factors}{53}{subsection.6.6.3}%
-\contentsline {section}{\numberline {6.7}Relation to Commercial Tools and Practical Implications}{53}{section.6.7}%
-\contentsline {section}{\numberline {6.8}Summary}{54}{section.6.8}%
-\contentsline {chapter}{\numberline {7}Conclusions}{55}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Conclusions}{55}{section.7.1}%
-\contentsline {subsection}{\numberline {7.1.1}Summary of Contributions}{55}{subsection.7.1.1}%
-\contentsline {subsection}{\numberline {7.1.2}Answers to the Research Questions}{56}{subsection.7.1.2}%
-\contentsline {subsection}{\numberline {7.1.3}Outlook and Future Work}{56}{subsection.7.1.3}%
+\contentsline {section}{\numberline {5.4}End-to-End AI-Assisted Workflow Results (RQ3)}{42}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Scenario: NYC Taxi V1~$\rightarrow $~V2}{43}{subsection.5.4.1}%
+\contentsline {section}{\numberline {5.5}Summary of Key Quantitative Metrics}{44}{section.5.5}%
+\contentsline {chapter}{\numberline {6}Discussion}{46}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Overview}{46}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Discussion of RQ1: Schema Change Detection}{46}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Discussion of RQ2: Canonical Ingestion and Mapping Regeneration}{47}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Effect of Retrieval vs.\ Zero-Shot Prompting}{48}{subsection.6.3.1}%
+\contentsline {section}{\numberline {6.4}Discussion of RQ3: Operational Feasibility and Effort Reduction}{49}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Human-in-the-Loop and Automation Bias}{50}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Limitations and Threats to Validity}{51}{section.6.6}%
+\contentsline {subsection}{\numberline {6.6.1}Dataset and Scenario Scope}{51}{subsection.6.6.1}%
+\contentsline {subsection}{\numberline {6.6.2}Model and Prompt Dependence}{51}{subsection.6.6.2}%
+\contentsline {subsection}{\numberline {6.6.3}Operational and Organisational Factors}{52}{subsection.6.6.3}%
+\contentsline {section}{\numberline {6.7}Relation to Commercial Tools and Practical Implications}{52}{section.6.7}%
+\contentsline {section}{\numberline {6.8}Summary}{53}{section.6.8}%
+\contentsline {chapter}{\numberline {7}Conclusions}{54}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Conclusions}{54}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}Summary of Contributions}{54}{subsection.7.1.1}%
+\contentsline {subsection}{\numberline {7.1.2}Answers to the Research Questions}{55}{subsection.7.1.2}%
+\contentsline {subsection}{\numberline {7.1.3}Outlook and Future Work}{55}{subsection.7.1.3}%
