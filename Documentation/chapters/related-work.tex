@@ -1,60 +1,16 @@
+% Related work chapter: focuses on schema evolution, schema matching,
+% retrieval-augmented generation, LLM-based ETL, and adaptive detection.
+
 \section{Introduction}
 \label{sec:related-intro}
 
-This chapter positions the thesis within existing work on schema evolution, schema matching, retrieval-augmented generation (RAG), and the use of large language models (LLMs) for data integration and ETL. Rather than providing an exhaustive survey, the focus is on a small set of representative contributions that directly inform the design choices in this project and motivate the research questions.
+This chapter positions the thesis within existing work on schema evolution, schema matching, retrieval-augmented generation (RAG), and the use of large language models (LLMs) for data integration and ETL. Rather than providing an exhaustive survey, the focus is on a set of representative contributions that directly inform the design choices in this project and motivate the research questions.
+
 
 \section{Schema Evolution and Mapping Adaptation}
 \label{sec:related-schema-evolution}
 
-Classical work on schema evolution in data integration treats schema mappings as first-class artefacts that must be maintained when schemas change. Velegrakis et al.\ introduce the ToMAS framework for mapping adaptation under evolving schemas, supporting both relational and XML structures and generating candidate rewritings that preserve the intent of existing mappings~\cite{velegrakis2003mapping}. Their work formalises how primitive schema changes (such as adding or renaming attributes) propagate to mappings.
-
-Yu and Popa propose a complementary, composition-based approach in which schema evolution itself is represented as a mapping that is composed with existing mappings~\cite{yu2005semantic}. This yields adapted mappings that better capture the semantics of both the original mappings and the evolution, and includes pruning techniques to keep the resulting mappings tractable. Rahm and Bernstein provide a broader survey of automatic schema matching techniques, highlighting how matching and mapping are intertwined in many integration scenarios~\cite{rahm2001survey}. Together, these works establish the idea that mappings should be updated rather than recreated from scratch and that semantic preservation under evolution is a key design goal.
-
-\section{LLMs and Retrieval for Schema-Centric Tasks}
-\label{sec:related-llm-schema}
-
-Recent work has explored how LLMs can assist with schema-centric tasks such as matching and mapping in data integration pipelines. Buss et al.\ analyse the use of LLMs for scalable schema mapping and identify challenges including inconsistent outputs, limited context windows, and the computational cost of repeated model calls~\cite{buss2025towards}. They propose strategies such as sampling and aggregation to stabilise results and type-based pre-filtering to reduce the search space.
-
-Kayali et al.\ introduce the GOBY benchmark and show that performance of LLM-based methods on public datasets can substantially overestimate their effectiveness on enterprise data integration tasks~\cite{kayali2024mind}. They demonstrate the importance of evaluating on realistic, heterogeneous enterprise schemas and propose techniques for adapting models to such environments. Sheetrit et al.\ present ReMatch, a retrieval-enhanced schema matching method that uses LLMs without requiring pre-defined mappings, supervised training, or direct access to sensitive source data~\cite{sheetrit2024rematch}. ReMatch illustrates how retrieval of relevant metadata and examples can be combined with LLM reasoning for schema matching, which is conceptually similar to the way this thesis uses RAG for mapping regeneration.
-
-Lewis et al.\ introduce the RAG framework, which combines a parametric language model with a non-parametric retriever that fetches relevant documents from a large corpus~\cite{lewis2020retrieval}. Although their experiments target textual knowledge-intensive tasks, the core idea---grounding generation in retrieved evidence rather than relying solely on model parameters---directly inspires the design of our mapping regeneration component, which retrieves schema and change artefacts instead of free text.
-
-\section{LLMs for ETL and Data Engineering}
-\label{sec:related-llm-etl}
-
-LLMs have also been investigated for tasks that more closely resemble ETL and data engineering workflows. Chen et al.\ evaluate Codex, a GPT-based model fine-tuned on public code, on a benchmark of programming problems and show that it can generate functionally correct solutions for a substantial fraction of tasks, especially when multiple samples are considered~\cite{chen2021evaluating}. This suggests that LLMs can generate non-trivial transformation code, which is relevant to the goal of automatically regenerating ETL mappings in this thesis.
-
-Narayan et al.\ examine whether foundation models can ``wrangle'' data and support integration and cleaning tasks~\cite{narayan2022foundation}. They report that LLMs can perform useful operations such as type inference and normalisation but also highlight limitations regarding robustness, transparency, and integration into existing data management systems. These observations reinforce the need to embed LLMs in controlled workflows with validation and monitoring, rather than relying on them as opaque end-to-end solvers.
-
-\section{Robustness Under Schema Evolution}
-\label{sec:related-robustness}
-
-Most LLM-based data management work assumes relatively stable schemas. Zhang et al.\ address this by introducing EvoSchema, a benchmark designed to evaluate text-to-SQL systems under controlled schema perturbations~\cite{zhang2024evoschema}. They define a taxonomy of schema changes and show that many systems, including those based on large language models, are sensitive to moderate structural modifications. Their findings underscore that robustness to schema evolution is a significant open challenge for learned systems, even outside the specific context of ETL.
-
-\section{Gaps and Research Opportunities}
-\label{sec:related-gaps}
-
-The reviewed work reveals several gaps that motivate the contributions of this thesis:
-
-\begin{itemize}
-  \item \textbf{End-to-end workflows for evolution}: Classical mapping adaptation frameworks assume that schema changes are already known and focus on updating mappings accordingly~\cite{velegrakis2003mapping,yu2005semantic}. There is comparatively little work on end-to-end workflows that start from evolving data, detect schema changes, retrieve relevant historical artefacts, and then regenerate mappings in a unified process.
-
-  \item \textbf{RAG for mapping regeneration}: RAG has been proposed for textual knowledge-intensive tasks~\cite{lewis2020retrieval} and used in schema matching settings~\cite{sheetrit2024rematch}, but its use for regenerating executable ETL mapping code grounded in schemas and change descriptions remains underexplored.
-
-  \item \textbf{Enterprise-focused evaluation}: Studies such as GOBY show that methods validated on public benchmarks can behave differently on enterprise datasets~\cite{kayali2024mind}. Many LLM-based proposals for schema-centric tasks do not yet include evaluations on realistic, evolving enterprise schemas similar to those targeted in this thesis.
-
-  \item \textbf{Robustness to evolution}: Benchmarks like EvoSchema highlight that even state-of-the-art learned systems are fragile under schema changes~\cite{zhang2024evoschema}. There is a need for approaches that explicitly use change information to guide adaptation, rather than treating schema drift as an incidental source of errors.
-\end{itemize}
-
-\section{Summary}
-\label{sec:related-summary}
-
-In summary, prior work establishes important foundations in schema evolution and mapping adaptation, LLM- and retrieval-based schema matching, RAG for knowledge-intensive tasks, and LLM support for code generation and data wrangling. At the same time, it leaves room for approaches that combine automatic detection of schema changes with RAG-enhanced LLMs for mapping regeneration in ETL pipelines, particularly under realistic enterprise-like evolution scenarios. This thesis addresses that space by designing and empirically studying an integrated workflow that detects schema changes, retrieves relevant artefacts, and generates updated transformation logic while aiming to preserve the semantics of existing pipelines.
-
-\section{Schema Evolution and Mapping Adaptation}
-\label{sec:related-schema-evolution}
-
-The problem of maintaining data mappings as schemas evolve has been studied extensively in the database and data integration literature. Early foundational work established the theoretical and practical foundations for mapping adaptation.
+The problem of maintaining data mappings as schemas evolve has been studied extensively in the database and data integration literature. Early work established both theoretical and practical foundations for mapping adaptation.
 
 \subsection{Foundational Mapping Adaptation Frameworks}
 
@@ -68,6 +24,18 @@ Rahm and Bernstein~\cite{rahm2001survey} provided a seminal survey of automatic 
 
 Research on schema evolution has expanded beyond theoretical frameworks to address real-world challenges. Empirical studies have shown that database schemas evolve in predictable patterns, with long periods of stability interrupted by bursts of maintenance activity~\cite{curino2008schema}. Modern database systems have incorporated online schema evolution capabilities, but the challenge of maintaining dependent applications and ETL pipelines remains significant.
 
+\subsection{Commercial Schema Evolution Support}
+\label{sec:related-commercial-evolution}
+
+Modern cloud data platforms such as Snowflake, BigQuery, and Databricks provide built-in support for schema evolution at the storage and ingestion layers. Typical features include the ability to ingest data with additional fields without failing a load job, to apply schema-on-read over semi-structured representations (e.g.\ JSON or variant types), and to evolve table definitions over time using \texttt{ALTER TABLE} statements. These mechanisms are extremely useful in practice because they reduce the operational friction of handling unexpected fields or minor structural changes in upstream data sources.
+
+Beyond the warehouse itself, higher-level data transformation and integration tools provide additional support. Frameworks such as dbt (Data Build Tool) enable versioned SQL models, snapshots for slowly changing dimensions, and incremental materialisations, while extract--load platforms such as Fivetran automatically adjust destination schemas when new source fields appear. Managed ETL services such as AWS Glue offer schema registries and compatibility checks for streaming and batch consumers.
+
+These tools substantially improve operational robustness and developer productivity, but they still rely on humans to adapt custom transformation logic when schemas change. For example, when a column is renamed or split, a dbt model must be edited manually; when a connector adds a field, downstream business logic in SQL or Python is not automatically updated; when a schema registry flags an incompatibility, an engineer must repair the corresponding jobs.
+
+The focus of this thesis is therefore complementary to these capabilities. We explicitly detect and classify schema evolution events between source versions, persist them as structured JSON artefacts, and use this information to drive retrieval-augmented LLM-based regeneration of ETL mappings. Rather than aiming to replace warehouse-level schema evolution or commercial ETL platforms, the goal is to show how LLMs can be integrated into the transformation layer to reduce manual effort in updating mapping code while maintaining existing business logic.
+
+
 \section{Schema Matching and Discovery}
 \label{sec:related-schema-matching}
 
@@ -75,23 +43,24 @@ Schema matching---the task of identifying correspondences between heterogeneous 
 
 \subsection{Traditional Schema Matching Approaches}
 
-Traditional schema matching methods rely on linguistic similarity (e.g., string matching, tokenization), structural similarity (e.g., graph-based comparisons), and instance-based techniques (e.g., data value comparisons). These approaches have been extensively surveyed and evaluated~\cite{rahm2001survey}, but they often struggle with semantic ambiguities and domain-specific knowledge gaps.
+Traditional schema matching methods rely on linguistic similarity (e.g.\ string matching, tokenisation), structural similarity (e.g.\ graph-based comparisons), and instance-based techniques (e.g.\ data value comparisons). These approaches have been extensively surveyed and evaluated~\cite{rahm2001survey}, but they often struggle with semantic ambiguities and domain-specific knowledge gaps.
 
 \subsection{LLM-Based Schema Matching}
 
-Recent work has demonstrated that large language models can effectively bootstrap schema matching using only element names and descriptions, without requiring labeled training data~\cite{li2024llm}. This capability is particularly valuable in enterprise settings where obtaining labeled data is expensive and time-consuming.
+Recent work has demonstrated that large language models can effectively bootstrap schema matching using only element names and descriptions, without requiring labelled training data~\cite{li2025llm}. This capability is particularly valuable in enterprise settings where obtaining labelled data is expensive and time-consuming.
 
 SCHEMORA~\cite{gungor2025schemora} combines LLMs with hybrid retrieval techniques in a prompt-based approach, enabling efficient candidate matching without exhaustive pairwise comparisons. By enriching schema metadata and leveraging both vector-based and lexical retrieval, SCHEMORA improves matching accuracy and scalability. Evaluated on the MIMIC-OMOP benchmark, it achieves state-of-the-art performance with gains of 7.49\% in HitRate@5 and 3.75\% in HitRate@3 over previous best results. The work provides practical guidance on model selection and underscores the critical role of retrieval in LLM-based schema matching.
 
 Magneto~\cite{magneto2024} addresses cost and accuracy trade-offs by combining small language models (SLMs) with LLMs in a two-phase pipeline: retrieval using efficient SLM-based strategies, followed by LLM-based reranking. The method includes self-supervised fine-tuning using LLM-generated synthetic training data and effective prompting strategies for reranking. Magneto achieves high accuracy across different domains while maintaining scalability, and introduces a new benchmark with real biomedical datasets.
 
-LLMatch~\cite{llmatch2024} is a unified, modular framework that decomposes schema matching into three stages: schema preparation, table-candidate selection, and column-level alignment. It introduces a Rollup-Drilldown optimization strategy for multi-table schema matching and includes SchemaNet, a benchmark for complex real-world schema pairs. The framework significantly improves matching accuracy in complex schema matching settings and substantially boosts engineer productivity in real-world data integration.
+LLMatch~\cite{li2025llm} is a unified, modular framework that decomposes schema matching into three stages: schema preparation, table-candidate selection, and column-level alignment. It introduces a Rollup-Drilldown optimisation strategy for multi-table schema matching and includes SchemaNet, a benchmark for complex real-world schema pairs. The framework significantly improves matching accuracy in complex schema matching settings and substantially boosts engineer productivity in real-world data integration.
 
-Matchmaker~\cite{seedat2024matchmaker} uses compositional language model programs with zero-shot self-improvement through synthetic in-context demonstrations, avoiding the need for labeled data. The system comprises three main components: candidate generation, refinement, and confidence scoring. When tested on real-world medical schema matching benchmarks, Matchmaker outperformed previous ML-based approaches by approximately 20\%, demonstrating effectiveness for accelerating data integration.
+Matchmaker~\cite{seedat2024matchmaker} uses compositional language model programmes with zero-shot self-improvement through synthetic in-context demonstrations, avoiding the need for labelled data. The system comprises three main components: candidate generation, refinement, and confidence scoring. When tested on real-world medical schema matching benchmarks, Matchmaker outperformed previous ML-based approaches by approximately 20\%, demonstrating effectiveness for accelerating data integration.
 
 \subsection{Knowledge Graph-Enhanced Schema Matching}
 
-KG-RAG4SM~\cite{ma2025kgrag} introduces a Knowledge Graph-based Retrieval-Augmented Generation model for Schema Matching. The approach uses novel vector-based, graph traversal-based, and query-based graph retrievals, as well as a hybrid approach and ranking schemes that identify the most relevant subgraphs from external large knowledge graphs. The work demonstrates that KG-based retrieval-augmented LLMs can generate more accurate results for complex matching cases without any re-training. Experimental results show that KG-RAG4SM outperforms LLM-based state-of-the-art methods by 35.89\% and 30.50\% in terms of precision and F1 score on the MIMIC dataset, respectively, and outperforms pre-trained language model-based methods by 69.20\% and 21.97\% in precision and F1 score on the Synthea dataset. The results also demonstrate that the approach is more efficient in end-to-end schema matching and scales to retrieve from large knowledge graphs.
+KG-RAG4SM~\cite{ma2025kgrag} introduces a knowledge-graph-based RAG model for schema matching. The approach uses vector-based, graph-traversal-based, and query-based graph retrievals, as well as a hybrid approach and ranking schemes that identify the most relevant subgraphs from external large knowledge graphs. The work demonstrates that KG-based retrieval-augmented LLMs can generate more accurate results for complex matching cases without any retraining. Experimental results show that KG-RAG4SM outperforms LLM-based state-of-the-art methods by 35.89\% and 30.50\% in terms of precision and F1 score on the MIMIC dataset, respectively, and outperforms pre-trained language-model-based methods by 69.20\% and 21.97\% in precision and F1 score on the Synthea dataset. The results also demonstrate that the approach is more efficient in end-to-end schema matching and scales to retrieve from large knowledge graphs.
+
 
 \section{Retrieval-Augmented Generation for Data Integration}
 \label{sec:related-rag}
@@ -104,7 +73,8 @@ Lewis et al.~\cite{lewis2020retrieval} introduced RAG models, which combine pre-
 
 \subsection{RAG for Tabular Data Discovery}
 
-Pneuma~\cite{pneuma2025} is a retrieval-augmented generation system designed for discovering and preparing tabular data using large language models. The system leverages LLMs for both table representation and retrieval, combining them with traditional information retrieval techniques like full-text and vector search. Pneuma preserves schema and row-level information while augmenting LLMs with traditional IR techniques. Evaluation on six real-world datasets (enterprise data, scientific databases, warehousing data, and open data) shows that Pneuma outperforms widely-used table search systems and state-of-the-art RAG systems in accuracy and resource efficiency.
+Pneuma~\cite{pneuma2025} is a retrieval-augmented generation system designed for discovering and preparing tabular data using large language models. The system leverages LLMs for both table representation and retrieval, combining them with traditional information retrieval techniques like full-text and vector search. Pneuma preserves schema and row-level information while augmenting LLMs with traditional IR techniques. Evaluation on six real-world datasets (enterprise data, scientific databases, warehousing data, and open data) shows that Pneuma outperforms widely used table search systems and state-of-the-art RAG systems in accuracy and resource efficiency.
+
 
 \section{Large Language Models for ETL and Data Engineering}
 \label{sec:related-llm-etl}
@@ -113,15 +83,16 @@ The application of large language models to data engineering tasks has gained si
 
 \subsection{Code Generation with LLMs}
 
-Chen et al.~\cite{chen2021evaluating} introduced Codex, a GPT language model fine-tuned on publicly available code from GitHub. The paper evaluated Codex's Python code-writing capabilities using HumanEval, a new benchmark for measuring functional correctness. Codex solved 28.8\% of HumanEval problems, compared to 0\% for GPT-3 and 11.4\% for GPT-J. The investigation revealed that sampling multiple solutions dramatically improved results, solving 70.2\% of problems with 100 samples per problem. This work demonstrates the potential of LLMs for code generation tasks, which is directly relevant to generating ETL transformation code.
+Chen et al.~\cite{chen2021evaluating} introduced Codex, a GPT language model fine-tuned on publicly available code from GitHub. The paper evaluated Codex's Python code-writing capabilities using HumanEval, a benchmark for measuring functional correctness. Codex solved 28.8\% of HumanEval problems, compared to 0\% for GPT-3 and 11.4\% for GPT-J. The investigation revealed that sampling multiple solutions dramatically improved results, solving 70.2\% of problems with 100 samples per problem. This work demonstrates the potential of LLMs for code generation tasks, which is directly relevant to generating ETL transformation code.
 
 Narayan et al.~\cite{narayan2022foundation} explored whether foundation models can wrangle data, examining their capabilities for data integration and transformation tasks. The work provides insights into how LLMs can support data management operations, though robust end-to-end methods for production ETL remain an open challenge.
 
 \subsection{Autonomous ETL Pipeline Design}
 
-FlowETL~\cite{diprofio2025flowetl} presents an autonomous example-driven ETL pipeline architecture designed to automatically standardize and prepare input datasets according to a concise, user-defined target dataset. FlowETL is an ecosystem of components including a Planning Engine that uses paired input-output dataset samples to construct a transformation plan, an ETL worker that applies the plan, and monitoring and logging for observability. The results show promising generalization capabilities across 14 datasets of various domains, file structures, and file sizes. This work addresses a major limitation of modern ETL solutions: the extensive need for human-in-the-loop involvement in designing context-specific transformations.
+FlowETL~\cite{diprofio2025flowetl} presents an autonomous example-driven ETL pipeline architecture designed to automatically standardise and prepare input datasets according to a concise, user-defined target dataset. FlowETL is an ecosystem of components including a planning engine that uses paired input--output dataset samples to construct a transformation plan, an ETL worker that applies the plan, and monitoring and logging for observability. The results show promising generalisation capabilities across 14 datasets of various domains, file structures, and file sizes. This work addresses a major limitation of modern ETL solutions: the extensive need for human-in-the-loop involvement in designing context-specific transformations.
 
-Recent work on autonomous ETL pipelines~\cite{autonomous-etl2024} demonstrates that generative AI can analyze requirements to build pipeline logic, construct schema mappings, and create infrastructure-as-code templates for deployment. These systems support continuous validation of transformation logic, dynamic optimization, and self-healing capabilities through reinforcement learning feedback loops. Platforms like Microsoft Fabric and Databricks integrate AI copilots that enable both initial code generation and ongoing pipeline management.
+Recent work on autonomous ETL pipelines~\cite{autonomous-etl2025} demonstrates that generative AI can analyse requirements to build pipeline logic, construct schema mappings, and create infrastructure-as-code templates for deployment. These systems support continuous validation of transformation logic, dynamic optimisation, and self-healing capabilities through reinforcement-learning feedback loops. Platforms like Microsoft Fabric and Databricks integrate AI copilots that enable both initial code generation and ongoing pipeline management.
+
 
 \section{Adaptive Schema Evolution Detection}
 \label{sec:related-adaptive-detection}
@@ -130,7 +101,7 @@ Detecting schema evolution events is a prerequisite for adaptive mapping regener
 
 \subsection{Machine Learning-Based Detection}
 
-AutoSchema~\cite{autoschema2024} is a self-supervised learning framework that detects and adapts to schema drift in real-time data streams. The framework uses two key components: a drift detection system employing contrastive learning, which reduces false alarms by 22\% compared to rule-based methods, and a dynamic schema adapter using graph-based metadata learning to rebuild schema mappings automatically. The approach achieves 98.3\% accuracy in detecting schema drift and enables adaptation in under one second. Unlike static schema management approaches or manual interventions, AutoSchema addresses the streaming context where data must be processed on-the-fly without pipeline interruption.
+AutoSchema~\cite{autoschema2024} is a self-supervised learning framework that detects and adapts to schema drift in real-time data streams. The framework uses two key components: a drift detection system employing contrastive learning, which reduces false alarms by 22\% compared to rule-based methods, and a dynamic schema adapter using graph-based metadata learning to rebuild schema mappings automatically. The approach achieves 98.3\% accuracy in detecting schema drift and enables adaptation in under one second. Unlike static schema management approaches or manual interventions, AutoSchema addresses the streaming context where data must be processed on the fly without pipeline interruption.
 
 SAVeD (Semantic Aware Version Discovery)~\cite{saved2025} uses contrastive learning and transformer encoders to identify versions of structured datasets without metadata or labels. The framework employs a modified SimCLR pipeline with augmented table views to learn semantic similarity, demonstrating competitive performance on benchmark datasets. SAVeD addresses the common challenge in data science where datasets undergo various transformations that create multiple versions of the same underlying data.
 
@@ -138,24 +109,23 @@ SAVeD (Semantic Aware Version Discovery)~\cite{saved2025} uses contrastive learn
 
 EvoSchema~\cite{zhang2024evoschema} is a comprehensive benchmark designed to assess and enhance the robustness of text-to-SQL systems when database schemas evolve. The work introduces a novel schema evolution taxonomy encompassing ten perturbation types across column-level and table-level modifications, systematically simulating real-world database schema changes. Evaluation of both open-source and closed-source large language models revealed that table-level perturbations significantly impact model performance more than column-level changes. The work demonstrates that training models on diverse schema designs can improve robustness by forcing models to distinguish schema differences for the same questions, avoiding spurious pattern learning.
 
+
 \section{Gaps and Research Opportunities}
 \label{sec:related-gaps}
 
 While the reviewed literature provides substantial foundations, several gaps remain that motivate our work:
 
 \begin{itemize}
-    \item \textbf{Integrated detection and regeneration}: Most existing work addresses either schema evolution detection or mapping adaptation in isolation. Few systems provide end-to-end solutions that combine automated detection with evidence-grounded regeneration.
-    
-    \item \textbf{RAG for mapping regeneration}: While RAG has been applied to schema matching, its application to mapping regeneration in ETL contexts remains underexplored. The challenge of retrieving relevant historical mappings, transformation examples, and schema documentation to ground regeneration is an open research direction.
-    
-    \item \textbf{Operational integration}: Many academic approaches are evaluated in isolation from operational ETL workflows. The integration of detection and regeneration into orchestrated pipelines with monitoring, rollback, and validation capabilities requires further investigation.
-    
-    \item \textbf{Semantic preservation}: While mapping adaptation frameworks aim to preserve semantics, the use of LLMs with RAG to explicitly reason about semantic preservation during regeneration is a relatively unexplored area.
-    
-    \item \textbf{Real-time adaptation}: Most existing approaches assume batch processing or offline adaptation. The challenge of adapting mappings in real-time streaming ETL scenarios while maintaining correctness and performance is an active area of research.
+  \item \textbf{Integrated detection and regeneration}: Most existing work addresses either schema evolution detection or mapping adaptation in isolation. Few systems provide end-to-end solutions that combine automated detection with evidence-grounded regeneration.
+  \item \textbf{RAG for mapping regeneration}: While RAG has been applied to schema matching, its application to mapping regeneration in ETL contexts remains underexplored. The challenge of retrieving relevant historical mappings, transformation examples, and schema documentation to ground regeneration is an open research direction. In particular, little work has examined retrieval corpora built from historical schema versions, machine-readable change artefacts, and existing transformation code, as opposed to free-text documentation or generic metadata; this is the specific form of evidence-grounded mapping regeneration pursued in this thesis.
+  \item \textbf{Operational integration}: Many academic approaches are evaluated in isolation from operational ETL workflows. The integration of detection and regeneration into orchestrated pipelines with monitoring, rollback, and validation capabilities requires further investigation.
+  \item \textbf{Semantic preservation}: While mapping adaptation frameworks aim to preserve semantics, the use of LLMs with RAG to explicitly reason about semantic preservation during regeneration is a relatively unexplored area.
+  \item \textbf{Real-time adaptation}: Most existing approaches assume batch processing or offline adaptation. The challenge of adapting mappings in real-time streaming ETL scenarios while maintaining correctness and performance is an active area of research.
 \end{itemize}
+
 
 \section{Summary}
 \label{sec:related-summary}
 
-This chapter has reviewed related work across five main themes: schema evolution and mapping adaptation, schema matching and discovery, retrieval-augmented generation, LLM-based ETL automation, and adaptive schema evolution detection. The review positions our work at the intersection of these research streams, where we aim to combine automated schema evolution detection with RAG-grounded LLM-based mapping regeneration for ETL pipelines. The identified gaps motivate our contributions: an integrated approach that detects schema changes, retrieves relevant evidence, and generates semantically-preserving transformation updates using retrieval-augmented large language models.
+This chapter has reviewed related work across five main themes: schema evolution and mapping adaptation, schema matching and discovery, retrieval-augmented generation, LLM-based ETL automation, and adaptive schema evolution detection. The review positions our work at the intersection of these research streams, where we aim to combine automated schema evolution detection with RAG-grounded LLM-based mapping regeneration for ETL pipelines. The identified gaps motivate our contributions: an integrated approach that detects schema changes, retrieves relevant evidence, and generates semantically preserving transformation updates using retrieval-augmented large language models.
+

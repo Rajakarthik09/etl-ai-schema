@@ -24,7 +24,7 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
     tolls = df["tolls_amount"] if "tolls_amount" in df.columns else 0
     df["trip_revenue"] = fare + tip + tolls
 
-    # Distance column may be trip_distance (V1) or trip_km (V2) or trip_distance_km (V3)
+    # Distance column may be trip_distance (V1) or trip_km (V2) or a pre-normalized trip_distance_km column
     dist_col = next((c for c in ["trip_distance", "trip_km", "trip_distance_km"] if c in df.columns), None)
     if dist_col is not None:
         mask = (df[dist_col] > 0) & (df["fare_amount"] > 0) & (df["fare_amount"] <= 500)

@@ -1,23 +1,32 @@
 from extract import extract
-from transform import transform
 from load import load
 
-def run_pipeline(csv_path="../data/raw/users_v1.csv", table_name="users"):
-    """Run ETL for users dataset (default) or any CSV with table_name for load."""
-    df = extract(csv_path)
-    df = transform(df)
-    load(df, table_name=table_name)
 
-
-def run_taxi_pipeline(version="v1", use_generated=False):
+def run_taxi_pipeline(version: str = "v1", use_generated: bool = False):
     """
-    Run ETL on NYC taxi CSV version. version in ("v1", "v2", "v3").
-    Loads to table yellow_trips_v1, yellow_trips_v2, yellow_trips_v3.
+    Run ETL on NYC taxi CSV version. Supported versions: \"v1\", \"v2\".
+
+    Loads to table yellow_trips_v1 or yellow_trips_v2.
     If use_generated is True, use etl/transform_generated.py (AI output) instead of transform_taxi.py.
     """
+    if version not in ("v1", "v2"):
+        raise ValueError(f"Unsupported taxi version: {version!r}. Only 'v1' and 'v2' are supported.")
     if use_generated:
         try:
-            from transform_generated import transform as taxi_transform
+            import importlib
+            import transform_generated as gen
+            importlib.reload(gen)
+            # Prefer a generic `transform` function if present; otherwise fall back
+            # to a version-specific name such as `transform_v2`.
+            fn = getattr(gen, "transform", None)
+            if fn is None:
+                candidate = f"transform_{version}"
+                fn = getattr(gen, candidate, None)
+            if fn is None:
+                raise AttributeError(
+                    f"transform_generated module has no 'transform' or 'transform_{version}' function"
+                )
+            taxi_transform = fn
         except ImportError:
             from transform_taxi import transform as taxi_transform
     else:
@@ -31,9 +40,6 @@ def run_taxi_pipeline(version="v1", use_generated=False):
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) > 1 and sys.argv[1] == "taxi":
-        ver = sys.argv[2] if len(sys.argv) > 2 else "v1"
-        use_gen = "--generated" in sys.argv or "-g" in sys.argv
-        run_taxi_pipeline(ver, use_generated=use_gen)
-    else:
-        run_pipeline()
+    ver = sys.argv[2] if len(sys.argv) > 2 else "v1" if len(sys.argv) > 1 and sys.argv[1] == "taxi" else "v1"
+    use_gen = "--generated" in sys.argv or "-g" in sys.argv
+    run_taxi_pipeline(ver, use_generated=use_gen)

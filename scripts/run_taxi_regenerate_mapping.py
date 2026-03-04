@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-Run AI mapping regeneration for NYC taxi schema evolution scenarios.
+Run AI mapping regeneration for the NYC taxi V1 → V2 schema evolution scenario.
 
 Loads taxi business logic from etl/transform_taxi.py, then calls regenerate_mapping
-for the chosen scenario (v1_to_v2 or v2_to_v3). Output: etl/transform_generated.py.
+for the V1 → V2 scenario. Output: etl/transform_generated.py.
 
 Usage:
   python scripts/run_taxi_regenerate_mapping.py --scenario v1_to_v2
-  python scripts/run_taxi_regenerate_mapping.py --scenario v2_to_v3
   python scripts/run_taxi_regenerate_mapping.py   # defaults to v1_to_v2
 """
 import argparse
@@ -42,9 +41,14 @@ def main():
     parser = argparse.ArgumentParser(description="Regenerate taxi ETL mapping via AI.")
     parser.add_argument(
         "--scenario",
-        choices=["v1_to_v2", "v2_to_v3"],
+        choices=["v1_to_v2"],
         default="v1_to_v2",
-        help="Schema evolution scenario",
+        help="Schema evolution scenario (only v1_to_v2 is supported).",
+    )
+    parser.add_argument(
+        "--model",
+        default="llama3",
+        help="LLM model: llama3, mistral, mistral-small-latest (Ollama or Mistral Cloud)",
     )
     parser.add_argument(
         "--output",
@@ -53,9 +57,10 @@ def main():
     )
     args = parser.parse_args()
 
-    old_key = "yellow_v1" if args.scenario == "v1_to_v2" else "yellow_v2"
-    new_key = "yellow_v2" if args.scenario == "v1_to_v2" else "yellow_v3"
-    changes_key = "yellow_v1_to_v2_changes" if args.scenario == "v1_to_v2" else "yellow_v2_to_v3_changes"
+    # Only V1 → V2 is supported now.
+    old_key = "yellow_v1"
+    new_key = "yellow_v2"
+    changes_key = "yellow_v1_to_v2_changes"
 
     old_schema_path = os.path.join(SCHEMAS_DIR, f"{old_key}_schema.json")
     new_schema_path = os.path.join(SCHEMAS_DIR, f"{new_key}_schema.json")
@@ -73,8 +78,9 @@ def main():
         changes_path,
         args.output,
         current_transform_snippet=snippet,
+        model=args.model,
     )
-    print("Done. Use etl/transform_generated.py in the pipeline for the AI-generated taxi transform.")
+    print("Done. Use etl/transform_generated.py in the pipeline for the generated taxi transform.")
     return 0
 
 

@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
-Run SchemaChangeDetector on NYC taxi V1/V2/V3 and persist schemas and change JSONs.
+Run SchemaChangeDetector on NYC taxi V1/V2 and persist schemas and change JSONs.
 
 Produces:
-  schemas/yellow_v1_schema.json, yellow_v2_schema.json, yellow_v3_schema.json
-  schemas/yellow_v1_to_v2_changes.json, schemas/yellow_v2_to_v3_changes.json
-  (optional) schemas/yellow_v1_to_v3_changes.json
+  schemas/yellow_v1_schema.json, yellow_v2_schema.json
+  schemas/yellow_v1_to_v2_changes.json
 """
 import json
 import os
@@ -47,15 +46,7 @@ def main():
         "yellow_base_v1.csv", "yellow_base_v2.csv",
         "yellow_v1", "yellow_v2", "yellow_v1_to_v2",
     )
-    run_scenario(
-        "yellow_base_v2.csv", "yellow_base_v3.csv",
-        "yellow_v2", "yellow_v3", "yellow_v2_to_v3",
-    )
-    run_scenario(
-        "yellow_base_v1.csv", "yellow_base_v3.csv",
-        "yellow_v1", "yellow_v3", "yellow_v1_to_v3",
-    )
-    print("Taxi schema detection complete.")
+    print("Taxi schema detection (V1 -> V2) complete.")
     return 0
 
 

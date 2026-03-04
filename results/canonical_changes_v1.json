@@ -1,0 +1,59 @@
+{
+  "added_columns": [
+    {
+      "column": "trip_duration_minutes",
+      "type": "float64",
+      "sample_values": []
+    },
+    {
+      "column": "trip_revenue",
+      "type": "float64",
+      "sample_values": []
+    }
+  ],
+  "removed_columns": [
+    {
+      "column": "DOLocationID",
+      "type": "int64"
+    },
+    {
+      "column": "PULocationID",
+      "type": "int64"
+    },
+    {
+      "column": "store_and_fwd_flag",
+      "type": "object"
+    },
+    {
+      "column": "improvement_surcharge",
+      "type": "float64"
+    },
+    {
+      "column": "mta_tax",
+      "type": "float64"
+    },
+    {
+      "column": "RatecodeID",
+      "type": "int64"
+    },
+    {
+      "column": "payment_type",
+      "type": "int64"
+    },
+    {
+      "column": "extra",
+      "type": "float64"
+    },
+    {
+      "column": "congestion_surcharge",
+      "type": "float64"
+    },
+    {
+      "column": "airport_fee",
+      "type": "float64"
+    }
+  ],
+  "renamed_columns": [],
+  "type_changes": [],
+  "constraint_changes": []
+}

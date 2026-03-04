@@ -1,0 +1,26 @@
+{
+  "by_version": [
+    {
+      "version": "v2",
+      "baseline_row_count": 93679,
+      "llm_row_count": 82113,
+      "row_count_match": false,
+      "rows_compared": 82113,
+      "cell_agreement_pct": 19.98,
+      "null_mismatch_count": 10366,
+      "per_column_agreement_pct": {
+        "VendorID": 65.3,
+        "tpep_pickup_datetime": 0.0,
+        "tpep_dropoff_datetime": 0.0,
+        "passenger_count": 57.06,
+        "trip_distance": 0.37,
+        "fare_amount": 2.81,
+        "tip_amount": 6.15,
+        "tolls_amount": 87.59,
+        "total_amount": 0.17,
+        "trip_duration_minutes": 0.07,
+        "trip_revenue": 0.25
+      }
+    }
+  ]
+}

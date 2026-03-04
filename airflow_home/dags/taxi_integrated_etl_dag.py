@@ -1,15 +1,18 @@
 """
-Taxi Integrated ETL DAG with Schema Detection and AI Mapping
+Thesis Taxi DAG: Schema Detection, AI Mapping, ETL.
 
-This DAG demonstrates the complete workflow on the NYC yellow taxi dataset:
-1. Detect schema changes between taxi schema versions (V1 -> V2)
-2. Generate AI mappings if changes are detected
-3. Run the taxi ETL pipeline with the (potentially) updated mappings
+This DAG implements the core workflow used in the thesis on the NYC yellow taxi dataset:
 
-The DAG is designed to be used for the main evaluation described in the thesis.
+1. Detect schema changes between taxi schema versions (V1 -> V2) and persist JSON artefacts.
+2. Generate AI mappings when changes are detected (taxi transform).
+3. Run the taxi ETL pipeline with (potentially) updated mappings into `yellow_trips_v*` tables.
+
+Canonical ingestion and evaluation scripts are available as standalone CLI commands and are
+no longer orchestrated by this DAG to keep runs lightweight on a local laptop.
 """
 from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
+from airflow.operators.bash import BashOperator
 from datetime import datetime
 import sys
 import os
@@ -175,7 +178,7 @@ def run_extract():
 def run_transform():
     """
     Step 4: Transform taxi data.
-    Uses AI-generated taxi mapping if available; otherwise uses baseline transform_taxi.
+    Uses the most recent generated taxi mapping if available; otherwise uses the baseline transform_taxi.
     """
     print("=" * 60)
     print("TAXI STEP 4: TRANSFORM")
@@ -185,11 +188,19 @@ def run_transform():
 
     df = pd.read_pickle(os.path.join(PROCESSED_DATA, "extracted_taxi.pkl"))
 
-    # For evaluation, always use the baseline taxi transform so that
-    # V1 and V2 metrics are directly comparable.
-    # The AI-generated mapping is still produced (see generate_ai_mapping),
-    # but not applied in this transform step.
-    from etl.transform_taxi import transform
+    generated_transform = os.path.join(PROJECT_PATH, "etl", "transform_generated.py")
+
+    try:
+        if os.path.exists(generated_transform):
+            print("Using generated taxi transform (transform_generated.py)...")
+            from etl.transform_generated import transform
+        else:
+            print("Using baseline taxi transform (transform_taxi.py)...")
+            from etl.transform_taxi import transform
+    except Exception as e:
+        print(f"Error loading transform; falling back to baseline taxi transform: {e}")
+        from etl.transform_taxi import transform
+
     df = transform(df)
     df.to_pickle(os.path.join(PROCESSED_DATA, "transformed_taxi.pkl"))
     print(f"✓ Transformed {len(df)} taxi rows")
@@ -216,13 +227,13 @@ def run_load():
 
 
 with DAG(
-    dag_id="taxi_integrated_etl_with_ai",
+    dag_id="taxi_thesis_etl_only",
     default_args={
         "owner": "thesis",
         "depends_on_past": False,
         "start_date": datetime(2023, 1, 1),
     },
-    description="Taxi ETL pipeline with schema detection and AI mapping generation",
+    description="Taxi ETL + schema detection + AI mapping (no canonical ingestion or evaluation)",
     schedule=None,  # Manual trigger for demo
     catchup=False,
     tags=["etl", "ai", "schema", "taxi", "thesis"],
@@ -253,6 +264,7 @@ with DAG(
         python_callable=run_load,
     )
 
-    # Workflow: detect → generate → extract → transform → load
+    # Workflow:
+    # detect → generate (optional) → extract → transform → load
     detect_task >> generate_task >> extract_task >> transform_task >> load_task
 

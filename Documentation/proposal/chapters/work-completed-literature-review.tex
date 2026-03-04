@@ -22,18 +22,16 @@ components:
   \texttt{transform(df)} implementation, which is validated and written to
   \texttt{etl/transform\_generated.py}.
   \item \textbf{Executable ETL pipelines.} The \texttt{etl/} package contains
-  extract, transform, and load components for both a synthetic users dataset
-  and a real NYC yellow taxi dataset. The pipelines can be executed via
-  command-line scripts and, in principle, integrated into Apache Airflow DAGs
-  provided in the repository.
+  extract, transform, and load components for the NYC yellow taxi dataset. The
+  pipelines can be executed via command-line scripts and, in principle,
+  integrated into Apache Airflow DAGs provided in the repository.
 \end{itemize}
 
-Controlled schema evolution scenarios have been prepared for both the synthetic
-users dataset and the NYC taxi dataset. For each, multiple schema versions
-(V1--V3) have been defined with documented structural changes, and scripts are
-available to generate the associated schema and change JSON files. This
-infrastructure enables reproducible experiments comparing manual and
-AI-assisted adaptation workflows.
+Controlled schema evolution scenarios have been prepared for the NYC taxi
+dataset. Multiple schema versions (V1--V3) have been defined with documented
+structural changes, and scripts are available to generate the associated
+schema and change JSON files. This infrastructure enables reproducible
+experiments comparing manual and AI-assisted adaptation workflows.
 
 \section{Literature Review (Summary)}
 

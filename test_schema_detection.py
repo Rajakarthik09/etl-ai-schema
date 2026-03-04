@@ -70,37 +70,32 @@ def test_detection(old_file, new_file, test_name):
     return result
 
 if __name__ == "__main__":
-    print("="*60)
-    print("SCHEMA DETECTION TEST SUITE")
-    print("="*60)
-    
-    # Test different scenarios
+    print("=" * 60)
+    print("SCHEMA DETECTION TEST SUITE (Taxi only)")
+    print("=" * 60)
+
     results = []
-    
+
     try:
-        results.append(test_detection("users_v1.csv", "users_v2.csv", "Users v1 → v2 (Basic Changes)"))
-        results.append(test_detection("users_v2.csv", "users_v3.csv", "Users v2 → v3 (Complex Changes)"))
-        results.append(test_detection("users_v1.csv", "users_v3.csv", "Users v1 → v3 (Full Evolution)"))
-        # NYC taxi schema evolution (if data present)
+        # NYC taxi schema evolution (if data present) – only V1 → V2 is supported.
         if os.path.exists(os.path.join(PROJECT_ROOT, "data/raw/yellow_base_v1.csv")):
             results.append(test_detection("yellow_base_v1.csv", "yellow_base_v2.csv", "Taxi V1 → V2"))
-            results.append(test_detection("yellow_base_v2.csv", "yellow_base_v3.csv", "Taxi V2 → V3"))
-            results.append(test_detection("yellow_base_v1.csv", "yellow_base_v3.csv", "Taxi V1 → V3"))
+        else:
+            print("⚠️ Taxi CSV files not found under data/raw/. Skipping tests.")
     except Exception as e:
         print(f"\n❌ Error during testing: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
-    
-    print("\n" + "="*60)
-    print("✅ All tests completed!")
-    print("="*60)
-    
-    # Summary
+
     if results:
+        print("\n" + "=" * 60)
+        print("✅ All taxi tests completed!")
+        print("=" * 60)
+
         print("\n📈 Overall Summary:")
-        total_added = sum(len(r['changes']['added_columns']) for r in results if r)
-        total_removed = sum(len(r['changes']['removed_columns']) for r in results if r)
+        total_added = sum(len(r["changes"]["added_columns"]) for r in results if r)
+        total_removed = sum(len(r["changes"]["removed_columns"]) for r in results if r)
         print(f"  Total columns added across all tests: {total_added}")
         print(f"  Total columns removed across all tests: {total_removed}")
 

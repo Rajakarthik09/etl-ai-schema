@@ -1,0 +1,174 @@
+{
+  "results": [
+    {
+      "run": 1,
+      "condition": "rag",
+      "metrics": {
+        "version": "v2",
+        "error": "HF_TOKEN, HF_API_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variable not set. Set it to your Hugging Face router access token.",
+        "baseline_row_count": 93679,
+        "llm_row_count": 0,
+        "row_count_match": false,
+        "cell_agreement_pct": 0.0,
+        "null_mismatch_count": 0,
+        "per_column_agreement_pct": {},
+        "schema_hallucination_count": null,
+        "schema_hallucinated_columns": [],
+        "code_executability": false
+      }
+    },
+    {
+      "run": 1,
+      "condition": "zero_shot",
+      "metrics": {
+        "version": "v2",
+        "error": "HF_TOKEN, HF_API_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variable not set. Set it to your Hugging Face router access token.",
+        "baseline_row_count": 93679,
+        "llm_row_count": 0,
+        "row_count_match": false,
+        "cell_agreement_pct": 0.0,
+        "null_mismatch_count": 0,
+        "per_column_agreement_pct": {},
+        "schema_hallucination_count": null,
+        "schema_hallucinated_columns": [],
+        "code_executability": false
+      }
+    },
+    {
+      "run": 2,
+      "condition": "rag",
+      "metrics": {
+        "version": "v2",
+        "error": "HF_TOKEN, HF_API_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variable not set. Set it to your Hugging Face router access token.",
+        "baseline_row_count": 93679,
+        "llm_row_count": 0,
+        "row_count_match": false,
+        "cell_agreement_pct": 0.0,
+        "null_mismatch_count": 0,
+        "per_column_agreement_pct": {},
+        "schema_hallucination_count": null,
+        "schema_hallucinated_columns": [],
+        "code_executability": false
+      }
+    },
+    {
+      "run": 2,
+      "condition": "zero_shot",
+      "metrics": {
+        "version": "v2",
+        "error": "HF_TOKEN, HF_API_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variable not set. Set it to your Hugging Face router access token.",
+        "baseline_row_count": 93679,
+        "llm_row_count": 0,
+        "row_count_match": false,
+        "cell_agreement_pct": 0.0,
+        "null_mismatch_count": 0,
+        "per_column_agreement_pct": {},
+        "schema_hallucination_count": null,
+        "schema_hallucinated_columns": [],
+        "code_executability": false
+      }
+    },
+    {
+      "run": 3,
+      "condition": "rag",
+      "metrics": {
+        "version": "v2",
+        "error": "HF_TOKEN, HF_API_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variable not set. Set it to your Hugging Face router access token.",
+        "baseline_row_count": 93679,
+        "llm_row_count": 0,
+        "row_count_match": false,
+        "cell_agreement_pct": 0.0,
+        "null_mismatch_count": 0,
+        "per_column_agreement_pct": {},
+        "schema_hallucination_count": null,
+        "schema_hallucinated_columns": [],
+        "code_executability": false
+      }
+    },
+    {
+      "run": 3,
+      "condition": "zero_shot",
+      "metrics": {
+        "version": "v2",
+        "error": "HF_TOKEN, HF_API_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variable not set. Set it to your Hugging Face router access token.",
+        "baseline_row_count": 93679,
+        "llm_row_count": 0,
+        "row_count_match": false,
+        "cell_agreement_pct": 0.0,
+        "null_mismatch_count": 0,
+        "per_column_agreement_pct": {},
+        "schema_hallucination_count": null,
+        "schema_hallucinated_columns": [],
+        "code_executability": false
+      }
+    },
+    {
+      "run": 4,
+      "condition": "rag",
+      "metrics": {
+        "version": "v2",
+        "error": "HF_TOKEN, HF_API_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variable not set. Set it to your Hugging Face router access token.",
+        "baseline_row_count": 93679,
+        "llm_row_count": 0,
+        "row_count_match": false,
+        "cell_agreement_pct": 0.0,
+        "null_mismatch_count": 0,
+        "per_column_agreement_pct": {},
+        "schema_hallucination_count": null,
+        "schema_hallucinated_columns": [],
+        "code_executability": false
+      }
+    },
+    {
+      "run": 4,
+      "condition": "zero_shot",
+      "metrics": {
+        "version": "v2",
+        "error": "HF_TOKEN, HF_API_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variable not set. Set it to your Hugging Face router access token.",
+        "baseline_row_count": 93679,
+        "llm_row_count": 0,
+        "row_count_match": false,
+        "cell_agreement_pct": 0.0,
+        "null_mismatch_count": 0,
+        "per_column_agreement_pct": {},
+        "schema_hallucination_count": null,
+        "schema_hallucinated_columns": [],
+        "code_executability": false
+      }
+    },
+    {
+      "run": 5,
+      "condition": "rag",
+      "metrics": {
+        "version": "v2",
+        "error": "HF_TOKEN, HF_API_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variable not set. Set it to your Hugging Face router access token.",
+        "baseline_row_count": 93679,
+        "llm_row_count": 0,
+        "row_count_match": false,
+        "cell_agreement_pct": 0.0,
+        "null_mismatch_count": 0,
+        "per_column_agreement_pct": {},
+        "schema_hallucination_count": null,
+        "schema_hallucinated_columns": [],
+        "code_executability": false
+      }
+    },
+    {
+      "run": 5,
+      "condition": "zero_shot",
+      "metrics": {
+        "version": "v2",
+        "error": "HF_TOKEN, HF_API_TOKEN or HUGGINGFACEHUB_API_TOKEN environment variable not set. Set it to your Hugging Face router access token.",
+        "baseline_row_count": 93679,
+        "llm_row_count": 0,
+        "row_count_match": false,
+        "cell_agreement_pct": 0.0,
+        "null_mismatch_count": 0,
+        "per_column_agreement_pct": {},
+        "schema_hallucination_count": null,
+        "schema_hallucinated_columns": [],
+        "code_executability": false
+      }
+    }
+  ]
+}

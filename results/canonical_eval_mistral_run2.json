@@ -1,0 +1,14 @@
+{
+  "by_version": [
+    {
+      "version": "v2",
+      "baseline_row_count": 93679,
+      "llm_row_count": 0,
+      "row_count_match": false,
+      "rows_compared": 0,
+      "cell_agreement_pct": 0.0,
+      "null_mismatch_count": 0,
+      "per_column_agreement": {}
+    }
+  ]
+}

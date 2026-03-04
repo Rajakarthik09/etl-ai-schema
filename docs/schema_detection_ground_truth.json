@@ -1,0 +1,12 @@
+{
+  "yellow_v1_to_v2_changes": {
+    "added": [
+      "cbd_congestion_fee"
+    ],
+    "removed": [],
+    "renamed": [
+      ["airport_fee", "Airport_fee"]
+    ]
+  }
+}
+

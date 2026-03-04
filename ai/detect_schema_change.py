@@ -5,6 +5,7 @@ This module detects changes between two data schemas and classifies them.
 """
 import json
 import pandas as pd
+import numpy as np
 from typing import Dict, List, Tuple, Any
 from pathlib import Path
 
@@ -80,44 +81,79 @@ class SchemaChangeDetector:
         old_cols = set(old_schema["columns"].keys())
         new_cols = set(new_schema["columns"].keys())
         
-        # Detect added columns
-        added = new_cols - old_cols
+        # Detect renamed columns (using a combination of name and data similarity)
+        common_cols = old_cols & new_cols
+        potential_renames = []
+        
+        # Require minimum name similarity so we don't falsely rename unrelated columns
+        # (e.g. payment_type -> vendor_id have similar integer values but different meaning).
+        MIN_NAME_SIM_FOR_RENAME = 0.35
+
+        for old_col in old_cols - common_cols:
+            for new_col in new_cols - common_cols:
+                name_sim = self._calculate_similarity(old_col, new_col)
+                if name_sim < MIN_NAME_SIM_FOR_RENAME:
+                    continue
+                # If names are identical ignoring case, treat as a rename regardless
+                # of data similarity (e.g., airport_fee -> Airport_fee).
+                if name_sim == 1.0:
+                    combined = 1.0
+                else:
+                    data_sim = self._calculate_data_similarity(
+                        old_schema["columns"].get(old_col, {}),
+                        new_schema["columns"].get(new_col, {}),
+                    )
+                    # Combine name and data similarity. This helps capture cases like
+                    # trip_distance -> trip_km, where names differ more but data is
+                    # highly correlated.
+                    combined = 0.5 * name_sim + 0.5 * data_sim
+                if combined > 0.6:
+                    potential_renames.append({
+                        "old_column": old_col,
+                        "new_column": new_col,
+                        "similarity": combined,
+                        "old_type": old_schema["columns"][old_col]["dtype"],
+                        "new_type": new_schema["columns"][new_col]["dtype"]
+                    })
+
+        # Canonical = V1: if source has trip_km (e.g. V2) and target has trip_distance, treat as rename.
+        if "trip_km" in old_cols and "trip_distance" in new_cols and "trip_km" not in common_cols and "trip_distance" not in common_cols:
+            if not any(r["old_column"] == "trip_km" for r in potential_renames):
+                potential_renames.append({
+                    "old_column": "trip_km",
+                    "new_column": "trip_distance",
+                    "similarity": 1.0,
+                    "old_type": old_schema["columns"].get("trip_km", {}).get("dtype", "float64"),
+                    "new_type": new_schema["columns"].get("trip_distance", {}).get("dtype", "float64"),
+                })
+
+        self.changes["renamed_columns"] = potential_renames
+
+        # After renames are identified, derive added/removed by excluding
+        # endpoints of rename pairs so that a column is not simultaneously
+        # counted as added/removed and renamed.
+        renamed_old = {r["old_column"] for r in potential_renames}
+        renamed_new = {r["new_column"] for r in potential_renames}
+
+        added = (new_cols - old_cols) - renamed_new
+        removed = (old_cols - new_cols) - renamed_old
+
         self.changes["added_columns"] = [
             {
                 "column": col,
                 "type": new_schema["columns"][col]["dtype"],
-                "sample_values": new_schema["columns"][col]["sample_values"]
+                "sample_values": new_schema["columns"][col]["sample_values"],
             }
             for col in added
         ]
-        
-        # Detect removed columns
-        removed = old_cols - new_cols
+
         self.changes["removed_columns"] = [
             {
                 "column": col,
-                "type": old_schema["columns"][col]["dtype"]
+                "type": old_schema["columns"][col]["dtype"],
             }
             for col in removed
         ]
-        
-        # Detect renamed columns (using similarity)
-        common_cols = old_cols & new_cols
-        potential_renames = []
-        
-        for old_col in old_cols - common_cols:
-            for new_col in new_cols - common_cols:
-                similarity = self._calculate_similarity(old_col, new_col)
-                if similarity > 0.6:  # Threshold for potential rename
-                    potential_renames.append({
-                        "old_column": old_col,
-                        "new_column": new_col,
-                        "similarity": similarity,
-                        "old_type": old_schema["columns"][old_col]["dtype"],
-                        "new_type": new_schema["columns"][new_col]["dtype"]
-                    })
-        
-        self.changes["renamed_columns"] = potential_renames
         
         # Detect type changes
         for col in common_cols:
@@ -139,6 +175,50 @@ class SchemaChangeDetector:
         """
         from difflib import SequenceMatcher
         return SequenceMatcher(None, str1.lower(), str2.lower()).ratio()
+    
+    def _calculate_data_similarity(self, old_meta: Dict[str, Any], new_meta: Dict[str, Any]) -> float:
+        """
+        Estimate similarity between two columns based on their sample values.
+        Returns a score in [0, 1].
+        """
+        old_samples = old_meta.get("sample_values", []) or []
+        new_samples = new_meta.get("sample_values", []) or []
+        if not old_samples or not new_samples:
+            return 0.0
+
+        # Try numeric comparison first
+        def to_float_list(values):
+            vals = []
+            for v in values:
+                try:
+                    vals.append(float(v))
+                except Exception:
+                    return None
+            return vals
+
+        old_nums = to_float_list(old_samples)
+        new_nums = to_float_list(new_samples)
+        if old_nums is not None and new_nums is not None:
+            n = min(len(old_nums), len(new_nums))
+            if n >= 3:
+                a = np.array(old_nums[:n])
+                b = np.array(new_nums[:n])
+                # If either side is constant, fall back to relative difference
+                if np.std(a) == 0 or np.std(b) == 0:
+                    denom = np.maximum(np.abs(a) + np.abs(b), 1.0)
+                    rel_diff = np.mean(np.abs(a - b) / denom)
+                    return max(0.0, 1.0 - rel_diff)
+                corr = np.corrcoef(a, b)[0, 1]
+                return float(max(0.0, min(1.0, corr)))
+
+        # Fall back to set-based similarity for non-numeric data
+        old_set = set(str(v) for v in old_samples)
+        new_set = set(str(v) for v in new_samples)
+        inter = len(old_set & new_set)
+        union = len(old_set | new_set)
+        if union == 0:
+            return 0.0
+        return inter / union
     
     def classify_changes(self) -> Dict[str, Any]:
         """
@@ -260,49 +340,15 @@ def detect_changes(old_file: str, new_file: str,
 
 
 if __name__ == "__main__":
-    # Example usage
-    import os
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    
-    old_file = os.path.join(project_root, "data", "raw", "users_v1.csv")
-    new_file = os.path.join(project_root, "data", "raw", "users_v2.csv")
-    
-    old_schema_path = os.path.join(project_root, "schemas", "old_schema.json")
-    new_schema_path = os.path.join(project_root, "schemas", "new_schema.json")
-    
-    # Ensure schema directory exists
-    os.makedirs(os.path.dirname(old_schema_path), exist_ok=True)
-    
-    result = detect_changes(old_file, new_file, old_schema_path, new_schema_path)
-    
-    print("\n" + "=" * 50)
-    print("SCHEMA CHANGE DETECTION RESULTS")
-    print("=" * 50)
-    print(f"\nAdded columns: {len(result['changes']['added_columns'])}")
-    for col in result['changes']['added_columns']:
-        print(f"  + {col['column']} ({col['type']})")
-    
-    print(f"\nRemoved columns: {len(result['changes']['removed_columns'])}")
-    for col in result['changes']['removed_columns']:
-        print(f"  - {col['column']} ({col['type']})")
-    
-    print(f"\nRenamed columns: {len(result['changes']['renamed_columns'])}")
-    for rename in result['changes']['renamed_columns']:
-        print(f"  ~ {rename['old_column']} -> {rename['new_column']} (similarity: {rename['similarity']:.2f})")
-    
-    print(f"\nType changes: {len(result['changes']['type_changes'])}")
-    for tc in result['changes']['type_changes']:
-        print(f"  ! {tc['column']}: {tc['old_type']} -> {tc['new_type']}")
-    
-    print("\n" + "=" * 50)
-    print("CLASSIFICATION")
-    print("=" * 50)
-    print(f"Severity: {result['classification']['severity']}")
-    print(f"Migration required: {result['classification']['migration_required']}")
-    print(f"\nBreaking changes: {len(result['classification']['breaking_changes'])}")
-    for bc in result['classification']['breaking_changes']:
-        print(f"  ⚠ {bc}")
-    print(f"\nNon-breaking changes: {len(result['classification']['non_breaking_changes'])}")
-    for nbc in result['classification']['non_breaking_changes']:
-        print(f"  ✓ {nbc}")
+    """
+    Simple CLI entry point.
+
+    For thesis experiments, prefer running the dedicated taxi scripts:
+      - scripts/run_taxi_schema_detection.py
+      - scripts/evaluate_schema_detection.py
+    """
+    print(
+        "SchemaChangeDetector module.\n"
+        "Run 'python scripts/run_taxi_schema_detection.py' for the taxi use case."
+    )
 

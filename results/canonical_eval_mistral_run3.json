@@ -1,0 +1,13 @@
+{
+  "by_version": [
+    {
+      "version": "v2",
+      "error": "\"['VendorID' 'payment_type' 'improvement_surcharge' 'Airport_fee'\\n 'DOLocationID' 'mta_tax' 'congestion_surcharge' 'cbd_congestion_fee'\\n 'store_and_fwd_flag' 'PULocationID' 'extra'] not found in axis\"",
+      "baseline_row_count": 93679,
+      "llm_row_count": 0,
+      "row_count_match": false,
+      "cell_agreement_pct": 0.0,
+      "null_mismatch_count": 0
+    }
+  ]
+}

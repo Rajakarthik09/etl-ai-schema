@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 """
-Convert NYC TLC yellow taxi Parquet to a downsampled CSV baseline (V1).
+Convert NYC TLC yellow taxi Parquet files to downsampled CSV baselines (V1, V2).
 
-Reads data/raw/yellow_tripdata_YYYY-MM.parquet, samples ~100k rows,
-writes data/raw/yellow_base_v1.csv. No schema changes; V1 is a clean sample.
+By default:
+- V1 is sampled from data/raw/yellow_tripdata_2015-01.parquet -> data/raw/yellow_base_v1.csv
+- V2 is sampled from data/raw/yellow_tripdata_2025-01.parquet -> data/raw/yellow_base_v2.csv
+
+No schema changes are applied; versions reflect the underlying Parquet schemas.
 
 Usage:
   python scripts/convert_parquet_to_csv.py
-  python scripts/convert_parquet_to_csv.py --input data/raw/yellow_tripdata_2023-01.parquet --rows 100000
+  python scripts/convert_parquet_to_csv.py --rows 100000
+  python scripts/convert_parquet_to_csv.py --v1-input data/raw/yellow_tripdata_2015-01.parquet --v2-input data/raw/yellow_tripdata_2025-01.parquet
+  python scripts/convert_parquet_to_csv.py --only v1
 """
 import argparse
 import os
@@ -18,23 +23,39 @@ RAW_DIR = os.path.join(PROJECT_ROOT, "data", "raw")
 DEFAULT_ROWS = 100_000
 
 
-def find_parquet_source():
-    """Use yellow_tripdata_2023-01.parquet if present, else first yellow_tripdata_*.parquet."""
-    preferred = os.path.join(RAW_DIR, "yellow_tripdata_2023-01.parquet")
-    if os.path.isfile(preferred):
-        return preferred
-    for name in sorted(os.listdir(RAW_DIR or ".")):
-        if name.startswith("yellow_tripdata_") and name.endswith(".parquet"):
-            return os.path.join(RAW_DIR, name)
-    return None
+DEFAULT_V1_PARQUET = os.path.join(RAW_DIR, "yellow_tripdata_2015-01.parquet")
+DEFAULT_V2_PARQUET = os.path.join(RAW_DIR, "yellow_tripdata_2025-01.parquet")
+DEFAULT_V1_CSV = os.path.join(RAW_DIR, "yellow_base_v1.csv")
+DEFAULT_V2_CSV = os.path.join(RAW_DIR, "yellow_base_v2.csv")
+
+
+def _read_and_sample_parquet(input_path: str, rows: int, seed: int):
+    import pandas as pd
+
+    df = pd.read_parquet(input_path, engine="pyarrow")
+    n_total = len(df)
+    n_sample = min(rows, n_total)
+    if n_sample < n_total:
+        df = df.sample(n=n_sample, random_state=seed)
+    return df
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Convert NYC TLC Parquet to CSV sample (V1).")
+    parser = argparse.ArgumentParser(description="Convert NYC TLC Parquet to CSV samples (V1/V2).")
     parser.add_argument(
         "--input", "-i",
         default=None,
-        help="Input Parquet path (default: yellow_tripdata_2023-01.parquet or first yellow_*.parquet in data/raw)",
+        help="(Deprecated) Alias for --v1-input",
+    )
+    parser.add_argument(
+        "--v1-input",
+        default=None,
+        help=f"Input Parquet for V1 (default: {os.path.basename(DEFAULT_V1_PARQUET)})",
+    )
+    parser.add_argument(
+        "--v2-input",
+        default=None,
+        help=f"Input Parquet for V2 (default: {os.path.basename(DEFAULT_V2_PARQUET)})",
     )
     parser.add_argument(
         "--rows", "-n",
@@ -43,9 +64,20 @@ def main():
         help=f"Number of rows to sample (default: {DEFAULT_ROWS})",
     )
     parser.add_argument(
-        "--output", "-o",
-        default=os.path.join(RAW_DIR, "yellow_base_v1.csv"),
-        help="Output CSV path",
+        "--v1-output",
+        default=DEFAULT_V1_CSV,
+        help="Output CSV path for V1",
+    )
+    parser.add_argument(
+        "--v2-output",
+        default=DEFAULT_V2_CSV,
+        help="Output CSV path for V2",
+    )
+    parser.add_argument(
+        "--only",
+        choices=["v1", "v2", "both"],
+        default="both",
+        help="Which outputs to generate (default: both)",
     )
     parser.add_argument(
         "--seed",
@@ -55,23 +87,29 @@ def main():
     )
     args = parser.parse_args()
 
-    input_path = args.input or find_parquet_source()
-    if not input_path or not os.path.isfile(input_path):
-        print("Error: No Parquet file found. Place yellow_tripdata_YYYY-MM.parquet in data/raw/", file=sys.stderr)
-        sys.exit(1)
+    v1_input = args.input or args.v1_input or DEFAULT_V1_PARQUET
+    v2_input = args.v2_input or DEFAULT_V2_PARQUET
 
-    os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
+    if args.only in ("v1", "both"):
+        if not os.path.isfile(v1_input):
+            print(f"Error: V1 Parquet not found: {v1_input}", file=sys.stderr)
+            sys.exit(1)
+        os.makedirs(os.path.dirname(args.v1_output) or ".", exist_ok=True)
+        print(f"Reading V1 {v1_input}...")
+        df1 = _read_and_sample_parquet(v1_input, rows=args.rows, seed=args.seed)
+        df1.to_csv(args.v1_output, index=False)
+        print(f"Wrote {args.v1_output} ({len(df1)} rows)")
 
-    import pandas as pd
+    if args.only in ("v2", "both"):
+        if not os.path.isfile(v2_input):
+            print(f"Error: V2 Parquet not found: {v2_input}", file=sys.stderr)
+            sys.exit(1)
+        os.makedirs(os.path.dirname(args.v2_output) or ".", exist_ok=True)
+        print(f"Reading V2 {v2_input}...")
+        df2 = _read_and_sample_parquet(v2_input, rows=args.rows, seed=args.seed)
+        df2.to_csv(args.v2_output, index=False)
+        print(f"Wrote {args.v2_output} ({len(df2)} rows)")
 
-    print(f"Reading {input_path}...")
-    df = pd.read_parquet(input_path, engine="pyarrow")
-    n_total = len(df)
-    n_sample = min(args.rows, n_total)
-    if n_sample < n_total:
-        df = df.sample(n=n_sample, random_state=args.seed)
-    df.to_csv(args.output, index=False)
-    print(f"Wrote {args.output} ({len(df)} rows)")
     return 0
 
 

@@ -1,0 +1,130 @@
+% Discussion chapter: interprets results, relates them to literature, and states limitations.
+
+\section{Overview}
+\label{sec:discussion-overview}
+
+This chapter interprets the empirical results reported in Chapter~\ref{sec:results-detection}--\ref{sec:results-e2e} and relates them to the literature surveyed in Chapter~3. The discussion is organised along the three research questions (RQ1--RQ3), followed by a consolidated view of limitations, threats to validity, and implications for practice.
+
+
+\section{Discussion of RQ1: Schema Change Detection}
+\label{sec:discussion-rq1}
+
+The schema change detection module achieves perfect precision, recall, and F\(_1\)~scores on the canonical~$\leftrightarrow$~V2 scenario (Table~\ref{tbl:results-schema-metrics}), showing that for flat tabular schemas with well-defined evolution events the combination of name similarity and instance-level cues is sufficient to exactly recover designed changes. This aligns with observations from classical mapping adaptation frameworks such as ToMAS~\cite{velegrakis2003mapping} and composition-based approaches~\cite{yu2005semantic}, which assume access to precise schema change operations and rely on them to drive adaptation.
+
+At the same time, the incomplete detection of removed columns in the V1~$\rightarrow$~V2 taxi scenario highlights that removal inference is more brittle than rename or addition inference when only lightweight heuristics are used. Compared to rich schema evolution catalogues in real systems~\cite{curino2008schema}, the present setup only exercises a small portion of the full space of attribute-level and structural changes. The results therefore should not be read as demonstrating general robustness, but rather as evidence that the detector constitutes a sound and practically useful front-end for downstream mapping regeneration under the specific change patterns implemented in this thesis.
+
+The follow-up experiment with the RAG-augmented \texttt{openai/gpt-oss-120b:groq} detector (Table~\ref{tbl:results-schema-heuristic-vs-llm}) further supports this reading. When given only the canonical and V2 schema descriptions as non-parametric context, the large LLM recovers exactly the same change set---two added canonical columns, eleven removed columns, and one rename---as the heuristic detector, yielding F\(_1\)~scores of 1.0 for added, removed, renamed, and overall changes. This shows that a sufficiently capable RAG-LLM can match specialist heuristics on simple, well-specified tabular evolutions. At the same time, the experiment also underscores that the main value of RAG in this thesis lies in the subsequent mapping regeneration step: for schema detection on such schemas, the lightweight heuristic approach already saturates the available signal at much lower cost and complexity than an always-on LLM service.
+
+
+\section{Discussion of RQ2: Canonical Ingestion and Mapping Regeneration}
+\label{sec:discussion-rq2}
+
+The canonical ingestion experiments show that a retrieval-augmented LLM can, in favourable conditions, regenerate a mapping that is indistinguishable from a deterministic baseline at the level of cell equality. For the NYC taxi V2 scenario, the \texttt{llama3}-based canonical mapping contains at least one run with essentially perfect agreement---100\% cell-level agreement, 0 null mismatches, and 100\% per-column agreement across all canonical attributes, including derived measures such as \texttt{trip\_duration\_minutes} and \texttt{trip\_revenue}. This is striking given that prior schema mapping research~\cite{velegrakis2003mapping,yu2005semantic} typically focuses on symbolic mapping specifications or correspondence sets rather than end-to-end executable transformation code.
+
+At the same time, the aggregate metrics in Table~\ref{tbl:thesis-eval-summary} reveal that this success is fragile for smaller local models: when averaged over repeated trials, \texttt{llama3} achieves only around 19.5\% cell agreement with the canonical baseline, and \texttt{mistral} effectively collapses to 0\% because most runs fail to execute. In contrast, the hosted Hugging Face backend \texttt{openai/gpt-oss-120b:groq} reaches 98.85\% agreement with the same baseline on the taxi V2~$\rightarrow$~canonical task, indicating that a larger model with the same RAG setup can reliably recover almost all cells. 
+
+The contrasting behaviour of the \texttt{mistral}-based mapping, which fails on the canonical scenario due to NA-handling issues, emphasises that LLM-based mapping regeneration is not uniformly reliable. In classical systems, once a mapping or view has been verified, its behaviour is stable until further modifications; by contrast, sampling-based LLM generation can yield different behaviours across runs, and robustness hinges on the choice of model, prompt design, and guardrails. This observation is consistent with recent evaluations of LLM-based schema-centric methods~\cite{buss2025towards,kayali2024mind}, which report variability across models and datasets even when high-level tasks are similar.
+
+From a RAG perspective~\cite{lewis2020retrieval}, the experiments support the intuition that combining parametric knowledge (LLM weights) with non-parametric, retrieved artefacts (schemas, change sets, and reference transforms) can substantially improve faithfulness: the successful \texttt{llama3} mapping is produced under strong schema and change constraints and reuses code structure from the baseline transform. Yet, the failure case indicates that retrieval alone does not guarantee robustness to data-quality edge cases such as infinities and missing values. In production ETL practice, this suggests that LLM-based mapping regeneration should be coupled with strict automated tests and human review, much as Narayan et al.~\cite{narayan2022foundation} argue for guardrails in LLM-based data wrangling more broadly.
+
+
+\subsection{Effect of Retrieval vs.\ Zero-Shot Prompting}
+\label{sec:discussion-rag-ablation}
+
+The ablation study reported in Section~\ref{sec:results-ablation} further clarifies the role of
+retrieval-augmented prompting. For the local \texttt{llama3} backend, the zero-shot condition
+failed in all five trials: none of the generated transforms compiled and ran successfully, and
+consequently no meaningful canonical table could be compared against the baseline. Under the
+RAG-grounded condition, only one out of five trials executed successfully, but that trial achieved
+98.85\% cell-level agreement with the deterministic canonical mapping and 100\% per-column
+agreement for all canonical attributes except \texttt{passenger\_count}. These results confirm that
+retrieval can steer a relatively small local model towards high-quality mappings, but they also
+highlight that model limitations and fragile NA/type handling substantially constrain executability.
+
+The behaviour of the hosted \texttt{openai/gpt-oss-120b:groq} model contrasts with this pattern.
+Across five trials, the zero-shot condition achieved 100\% code executability but an average mapping
+accuracy of only 58.1\%, with a wide spread across runs: some runs reached around 90\% agreement,
+while others fell to the mid-teens. The main discrepancies arose in timestamp and identifier
+columns and in derived measures, even though the model never introduced hallucinated columns.
+When grounded in the same schemas, change sets, and transform snippet as \texttt{llama3}, the
+\texttt{gpt-oss-120B} backend consistently achieved 98.8\% accuracy, a 100\% row-count match rate,
+and zero schema hallucinations across all runs. This pattern---high variability in the zero-shot
+condition and stable near-perfect agreement under RAG---provides quantitative evidence that the
+retrieval component is doing substantive work in constraining and improving generation, rather than
+serving as a cosmetic prompt engineering trick.
+
+The ablation findings suggest that retrieval-augmented prompting is a key driver of mapping quality across heterogeneous LLM backends, but it must be combined with appropriate model selection and defensive validation. Larger hosted models can be more robust in terms of executability and raw capacity, yet still benefit greatly from explicit schema and change grounding when required to regenerate precise ETL mappings.
+
+
+\section{Discussion of RQ3: Operational Feasibility and Effort Reduction}
+\label{sec:discussion-rq3}
+
+The end-to-end workflow results demonstrate that the AI-assisted pipeline can complete successfully for the taxi V1~$\rightarrow$~V2 scenario using all three evaluated backends, with wall-clock times ranging from a few seconds to roughly two minutes for regeneration plus pipeline execution. As summarised in Table~\ref{tbl:thesis-eval-summary}, both \texttt{llama3} and \texttt{mistral} achieve a success rate of 1.0 under the DB-level checks, with typical durations of around 89 and 142~seconds respectively, while the \texttt{openai/gpt-oss-120b:groq} configuration reaches the same success rate in approximately 6.4~seconds. These durations are small compared to the multi-hour or multi-day effort often reported anecdotally for manual schema adaptation in production ETL environments, although the present setup is intentionally simplified and does not model sustained load or strict service-level objectives.
+
+Measured time-to-adaptation in the controlled experiments shows that the AI-assisted workflow reduces the developer-facing adaptation time relative to a purely manual approach, consistent with the intuition behind code-generation models such as Codex~\cite{chen2021evaluating} and autonomous ETL prototypes~\cite{diprofio2025flowetl}. In the manual condition, most time is spent understanding the impact of schema changes and editing code cautiously; in the AI-assisted condition, the bulk of the work shifts to orchestrating detection and regeneration steps and performing targeted fixes. This aligns with the “copilot” framing advocated by recent LLM-for-ETL work~\cite{narayan2022foundation,autonomous-etl2025}, where models accelerate common tasks but do not replace engineer judgement.
+
+At the same time, the AI-assisted workflow does not remove the need for careful validation. Both LLM configurations produce outputs that pass basic row-count and column-presence checks but still contain negative or zero trip durations, revealing that even correct mappings at the schema level can preserve undesirable or implausible records. This underscores that mapping regeneration must be integrated into broader data-quality and monitoring frameworks rather than treated as a standalone solution.
+
+
+\section{Human-in-the-Loop and Automation Bias}
+\label{sec:discussion-human-loop}
+
+The integration of LLMs into ETL maintenance workflows raises questions about automation bias: the
+tendency of human operators to over-trust automated suggestions or ignore contradictory evidence
+from the underlying data. In the context of schema evolution, automation bias could manifest as
+blindly accepting a generated transform because ``the AI said so'', without inspecting whether
+derived metrics remain meaningful or whether subtle regressions have been introduced.
+
+The workflow proposed in this thesis is explicitly designed to keep a human in the loop and to make
+the basis for LLM suggestions transparent. First, mapping regeneration outputs concrete, readable
+Python modules (e.g.\ \texttt{etl/transform\_generated.py}) that are grounded in exposed artefacts:
+schemas, change sets, and reference transforms. Second, every generated mapping is compared against
+the deterministic baseline using quantitative metrics such as cell-level agreement, null-mismatch
+counts, and row-count differences, which are recorded in machine-readable form and visualised in
+figures. These checks provide engineers with structured evidence about how close a candidate
+mapping is to the known-good baseline, rather than forcing them to rely on ad hoc spot checks.
+
+Looking ahead to production integration (as outlined in the Outlook), the design assumes explicit
+approval and rollback mechanisms for generated transformations. New mappings would be surfaced as
+proposals that must be reviewed and approved before being promoted to a live pipeline, and the
+previously validated transform and its metrics would be retained to enable rapid rollback if
+monitoring detects regressions. This combination of evidence-grounded prompts, explicit
+comparisons to a deterministic baseline, and human approval/rollback is intended to mitigate
+automation bias: the LLM acts as a powerful assistant for generating and adapting mappings, but
+responsibility for deciding whether to adopt a particular transform remains with the human
+operators, supported by quantitative and qualitative diagnostics.
+
+
+\section{Limitations and Threats to Validity}
+\label{sec:discussion-limitations}
+
+Several limitations constrain the extent to which the reported results generalise beyond the specific scenarios studied here.
+
+\subsection{Dataset and Scenario Scope}
+
+First, all experiments are conducted on a single real-world inspired domain: NYC taxi trip records. Although the constructed V1, V2, and canonical schemas capture common change patterns such as additions, removals, renames, and type changes, they do not span the diversity of enterprise data environments, including denormalised warehouse schemas, deeply nested records, or cross-table refactorings. V2~$\rightarrow$~V3 evolution is supported in the codebase but less thoroughly evaluated than V1~$\rightarrow$~V2 and canonical~$\leftrightarrow$~V2. As a result, external validity to other domains and richer evolution histories is limited.
+
+\subsection{Model and Prompt Dependence}
+
+Second, the mapping regenerator is evaluated on a small set of LLMs and a specific prompt design that encodes schemas, changes, and reference transforms. Different models, decoding parameters, or prompt formats may yield substantially different behaviours. The stark difference between the \texttt{llama3} and \texttt{mistral} canonical ingestion results illustrates this sensitivity. Moreover, the experiments assume that reasonably clean reference transformation logic is available; in legacy ETL systems with fragmented or poorly documented code, assembling suitable prompts may be more challenging.
+
+\subsection{Operational and Organisational Factors}
+
+Third, the evaluation focuses on short- to medium-term adaptation effort in a controlled development environment, rather than long-term operational aspects such as cost, latency under load, governance, and team adoption. API pricing, data-residency constraints, and engineer trust in AI-generated code are only discussed qualitatively. These factors can significantly influence whether organisations are willing to deploy LLM-based mapping regeneration in production, and systematic study of them is left to future work.
+
+
+\section{Relation to Commercial Tools and Practical Implications}
+\label{sec:discussion-commercial}
+
+Commercial data platforms and ETL tools provide important context for interpreting the contributions of this thesis. Cloud data warehouses such as Snowflake, BigQuery, and Databricks offer schema-on-read and schema evolution features that make ingestion robust to many upstream changes, and ETL frameworks such as dbt, Fivetran, and AWS Glue provide extensive support for versioning, monitoring, and deployment. However, these systems typically stop short of automatically regenerating custom transformation logic in response to schema evolution.
+
+For example, dbt models can be versioned and materialised incrementally, and dbt snapshots can track slowly changing dimensions, but adapting a model to a renamed or split column still requires manual edits to SQL code. Fivetran and similar ELT connectors can automatically add new source fields and adjust destination schemas but generally do not infer or rewrite downstream business logic such as the taxi \texttt{trip\_revenue} calculation or outlier filters. AWS Glue and related schema registries can validate compatibility between producers and consumers but rely on engineers to update transformation jobs when compatibility breaks.
+
+In contrast, the workflow implemented in this thesis focuses specifically on using retrieved schema and change artefacts plus existing transformation code to \emph{propose} updated mappings automatically. Rather than competing with commercial tools on orchestration or governance, it complements them at the transformation layer: schema registries, snapshots, and connector metadata can serve as rich sources of non-parametric knowledge for the RAG component, while the generated mappings can be surfaced to engineers for review and integration into existing pipelines. The empirical results indicate that such AI-assisted regeneration can be both accurate (for suitable models) and time-saving in controlled scenarios, suggesting a promising direction for practitioner tooling.
+
+
+\section{Summary}
+\label{sec:discussion-summary}
+
+Overall, the discussion shows that the proposed workflow can detect designed schema changes exactly in the evaluated canonical scenario, regenerate mappings that match a strong deterministic baseline for at least one LLM model, and reduce adaptation effort relative to purely manual workflows in a controlled taxi domain. At the same time, the results expose sensitivity to model choice, limitations in removal detection and data-quality robustness, and narrow domain coverage. These findings motivate the future work outlined in the concluding chapter, particularly around broader empirical evaluation, richer change taxonomies, and tighter integration with commercial ETL platforms and monitoring systems.
+

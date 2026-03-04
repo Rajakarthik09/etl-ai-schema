@@ -1,13 +1,13 @@
-\section{Background and Context (Problem Setting)}
+\section{Introduction}
 \label{sec:intro-background}
 
-Organizations increasingly rely on data-driven decision making, where operational systems (e.g., transactional databases, Software-as-a-Service applications, APIs, and file-based feeds) must be continuously integrated into analytics platforms. This integration is commonly implemented through Extract--Transform--Load (ETL) pipelines that ingest, clean, reconcile, and publish data for downstream reporting and machine learning. However, real-world data sources are not static: schemas evolve as business requirements change, upstream systems are upgraded, or new attributes are introduced. Even seemingly small schema changes (e.g., renaming a column, changing a type, splitting a nested structure) can invalidate existing transformations and break downstream dependencies.
+Organizations increasingly rely on data-driven decision making, hence operational systems like transactional databases, APIs and SaaS applications are continuously integrated into analytics platforms. Extract-Transform-Load(ETL) is a common way to do so, ETL pipelines ingest, clean, reconcile and publish data for downstream reporting, data analytics and machine learning. However, real-world data sources evolve schemas when requirements change, upstream systems are upgraded, or new attributes are introduced. Even small schema changes like renaming a column will invalidate existing transformations and break downstream dependencies.
 
-The academic literature has long recognized schema evolution as a fundamental challenge in data integration. Early work on mapping adaptation studied how schema mappings (declarative specifications that relate a source schema to a target schema) should be maintained as schemas change \cite{velegrakis2003mapping,yu2005semantic}. These mapping-centric approaches are central to many integration paradigms and have been closely connected to schema matching research, which aims to identify correspondences between heterogeneous schemas \cite{rahm2001survey}. Despite decades of progress, practitioners still face substantial costs when pipelines break: corrective work often requires manual diagnosis, reimplementation of transformations, and extensive validation.
+The academic literature has long recognized schema evolution as a fundamental challenge in data integration. Early work on mapping adaptation studied how schema mappings (declarative specifications that relate a source schema to a target schema) should be maintained as schemas change \cite{velegrakis2003mapping,yu2005semantic}. These mapping-centric approaches are central to many integration paradigms and have been closely connected to schema matching research, which aims to identify correspondences between heterogeneous schemas \cite{rahm2001survey}. Despite decades of progress, practitioners still face substantial costs when pipelines break and often requires manual diagnosis, re-implementation of transformations, and extensive validation.
 
-In parallel, recent advances in large language models (LLMs) have demonstrated strong capabilities in code generation and program understanding \cite{chen2021evaluating}. Retrieval-augmented generation (RAG) further improves reliability by grounding generation in external evidence (e.g., documentation, examples, previously validated mappings) \cite{lewis2020retrieval}. In data management, emerging research suggests that foundation models can support data wrangling tasks, but robust end-to-end methods for schema evolution in production ETL remain an open challenge \cite{narayan2022foundation}.
+Recent advances in large language models (LLMs) have demonstrated strong capabilities in code generation and program understanding \cite{chen2021evaluating}. Retrieval-augmented generation (RAG) further improves reliability by grounding generation in external evidence (e.g., documentation, examples, previously validated mappings) \cite{lewis2020retrieval}. In data management, emerging research suggests that foundation models can support data wrangling tasks, but robust end-to-end methods for schema evolution in production ETL remain an open challenge \cite{narayan2022foundation}.
 
-This thesis is positioned at the intersection of these research streams: (i) schema evolution and mapping adaptation, (ii) ETL pipeline operation and maintenance, and (iii) LLM/RAG-based automation for generating transformation logic. The central motivation is to reduce the manual effort required to keep ETL pipelines correct and operational as schemas evolve, while preserving the semantics embedded in existing, validated mappings.
+The thesis involves the following research streams: (i) schema evolution and mapping adaptation, (ii) ETL pipeline operation and maintenance, and (iii) LLM/RAG-based automation for generating transformation logic. The main objective is to reduce the manual effort required to keep ETL pipelines correct and operational as schemas evolve, while preserving the semantics embedded in the existing, validated mappings.
 
 \section{Problem Statement}
 \label{sec:intro-problem}
@@ -21,7 +21,7 @@ ETL pipelines typically encode transformation logic that assumes a specific sche
   \item \textbf{Semantic preservation}: A key requirement is to preserve the \emph{intended meaning} of existing mappings, not merely achieve syntactic validity. This is difficult when multiple alternative rewritings are plausible.
 \end{itemize}
 
-Therefore, the specific problem addressed in this thesis is: \emph{How to detect schema evolution events and regenerate mapping transformations in ETL pipelines in a way that preserves semantics and is operationally feasible, using evidence-grounded LLM techniques.}
+Therefore, the main problem addressed in this thesis is to \emph{Detect schema evolution events and regenerate mapping transformations in ETL pipelines in a way that preserves semantics and is operationally feasible, using evidence-grounded LLM techniques.} In particular, the work investigates constructing a retrieval corpus from historical schema versions, machine-readable change sets, and previously validated transformation code, and use this evidence to drive the regeneration of executable ETL mappings under schema evolution.
 
 \section{Research Aim and Objectives}
 \label{sec:intro-aim}
@@ -44,17 +44,15 @@ The aim of this thesis is to design and evaluate an adaptive approach for schema
 
 \subsection{Main Research Question}
 
-\textbf{RQ0:} How can retrieval-augmented large language models be applied to automatically detect schema evolution and regenerate mapping transformations in ETL pipelines while preserving data semantics and maintaining operational reliability?
+\textbf{RQ0:} How can retrieval-augmented large language models with detected schema evolution be applied to automatically regenerate mapping transformations in ETL pipelines while preserving data semantics and maintaining operational reliability?
 
 \subsection{Sub-Questions}
 
 \begin{itemize}
-  \item \textbf{RQ1 (Detection):} Which schema change types can be detected and classified reliably from evolving datasets and metadata, and what detection accuracy can be achieved in realistic ETL scenarios?
-  \item \textbf{RQ2 (Regeneration):} To what extent can RAG-grounded LLMs generate executable transformation updates that preserve the intended semantics of existing mappings?
-  \item \textbf{RQ3 (Operational feasibility):} What are the runtime and maintenance trade-offs of integrating detection and regeneration into an orchestrated ETL workflow, and how do these trade-offs compare with manual repair?
+  \item \textbf{RQ1 (Detection):} What precision, recall, and F\(_1\) scores can the schema change detector achieve for added, removed, and renamed columns in the NYC taxi V1~\(\rightarrow\)~V2 evolution scenario when evaluated against ground-truth change sets?
+  \item \textbf{RQ2 (Regeneration):} For the NYC taxi scenarios, what cell-level agreement (accuracy), null-mismatch counts, and per-column agreement do RAG-grounded LLM-generated canonical mappings achieve relative to a deterministic baseline, and how do these metrics vary across different LLMs?
+  \item \textbf{RQ3 (Operational feasibility):} In the orchestrated ETL workflow, what success rate and time-to-adaptation (including the time reduction ratio between manual and AI-assisted conditions) are achieved when integrating detection and regeneration components, and how do these compare with purely manual repair?
 \end{itemize}
-
-These questions are scientifically valid because they can be investigated through controlled experiments with measurable outcomes (e.g., precision/recall for detection; correctness and data-quality validation for regenerated mappings; latency and cost for operational feasibility). They are feasible within a master's thesis scope because they can be evaluated using publicly available datasets and reproducible schema evolution scenarios, and by restricting the initial implementation to a well-defined set of schema change classes.
 
 \section{Scope and Delimitations}
 \label{sec:intro-scope}
@@ -71,4 +69,14 @@ The thesis explicitly \textbf{does not} aim to solve all possible forms of schem
 \section{Outline of Thesis Structure}
 \label{sec:intro-structure}
 
-Chapter~1 introduces the research context, problem, aims, and questions. Chapter~2 reviews related work on schema evolution, mapping adaptation, schema matching, ETL orchestration, and retrieval-augmented language models. Chapter~3 presents the methodological approach, including evaluation design and metrics. Chapter~4 details the system architecture and implementation of schema change detection, retrieval, and LLM-based regeneration. Chapter~5 reports experimental results, including accuracy, correctness, and performance comparisons to baseline approaches. Finally, Chapter~6 concludes the thesis with a discussion of contributions, limitations, and future work.
+Chapter~1 Introduces the research context, problem, aims, and questions.
+
+Chapter~2 presents the basics and theoretical foundations, including schema evolution, schema matching and mapping, ETL orchestration, and retrieval-augmented language models. 
+
+Chapter~3 reviews related work on schema evolution, mapping adaptation, schema-centric use of LLMs, and adaptive detection. 
+
+Chapter~4 describes the methodological approach, including the system architecture, datasets, and evaluation design. 
+
+Chapter~5 reports experimental results for schema change detection, canonical ingestion, and end-to-end AI-assisted workflows. 
+
+Chapter~6 discusses these results in relation to the literature, articulates limitations, and draws out practical implications. Finally, Chapter~7 concludes the thesis with a concise summary of contributions and an outlook on future work.

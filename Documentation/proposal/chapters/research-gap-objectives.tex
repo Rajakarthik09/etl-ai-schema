@@ -51,15 +51,9 @@ To achieve this aim, the thesis pursues the following objectives:
 The thesis is guided by the following research questions:
 %
 \begin{itemize}
-  \item \textbf{RQ1 (Detection):} Which schema change types can be detected and
-  classified reliably from evolving tabular datasets and associated metadata in
-  realistic ETL scenarios?
-  \item \textbf{RQ2 (Regeneration):} To what extent can RAG-grounded LLMs
-  generate executable transformation updates that preserve the intended
-  semantics of existing ETL mappings?
-  \item \textbf{RQ3 (Operational feasibility):} What are the runtime and
-  maintenance trade-offs of integrating detection and regeneration into an
-  orchestrated ETL workflow, compared to a purely manual adaptation process?
+  \item \textbf{RQ1 (Detection):} What precision, recall, and F\(_1\) scores can the schema change detector achieve for added, removed, and renamed columns in the NYC taxi V1~\(\rightarrow\)~V2 and V2~\(\rightarrow\)~V3 evolution scenarios when evaluated against ground-truth change sets?
+  \item \textbf{RQ2 (Regeneration):} For the NYC taxi scenarios, what cell-level agreement (accuracy), null-mismatch counts, and per-column agreement do RAG-grounded LLM-generated canonical mappings achieve relative to a deterministic baseline, and how do these metrics vary across different LLMs?
+  \item \textbf{RQ3 (Operational feasibility):} In the orchestrated ETL workflow, what success rate and time-to-adaptation (including the time reduction ratio between manual and AI-assisted conditions) are achieved when integrating detection and regeneration components, and how do these compare with a purely manual adaptation process?
 \end{itemize}
 
 These questions are designed to be empirically answerable using controlled

@@ -8,11 +8,10 @@ The project follows a design--implement--evaluate methodology:
   module, (ii) an AI-powered mapping regenerator built around an
   OpenAI-compatible LLM, and (iii) an executable ETL pipeline that can be run
   standalone (CLI scripts) and, in principle, from Apache Airflow DAGs.
-  \item \textbf{Controlled schema evolution scenarios.} Two families of
-  tabular datasets are prepared: a synthetic users dataset and the real-world
-  NYC yellow taxi dataset. For each family, multiple schema versions (V1--V3)
-  are constructed with controlled, documented changes (column additions,
-  removals, renames, and type changes).
+  \item \textbf{Controlled schema evolution scenarios.} A family of controlled
+  tabular datasets is prepared from the real-world NYC yellow taxi data. Three
+  schema versions (V1--V3) are constructed with documented changes (column
+  additions, removals, renames, and type changes).
   \item \textbf{Experimental comparison.} For selected schema evolution
   scenarios, the time and effort required to adapt ETL logic are compared
   between (a) a purely manual workflow and (b) an AI-assisted workflow that
